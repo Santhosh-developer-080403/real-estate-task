@@ -256,9 +256,9 @@ function DashboardContent() {
       <div className="max-w-6xl mx-auto px-6 py-10 min-h-screen text-gray-800 relative">
 
 
-        <h1 className="text-3xl text-center font-extrabold mb-20 text-gray-900 mb-6">
+        <h2 className="text-3xl text-center font-extrabold mb-20 text-gray-900 mb-6">
           User <span className="text-orange-500">Dashboard</span>
-        </h1>
+        </h2>
 
         {/* Tabs Component */}
         <DashboardTabs

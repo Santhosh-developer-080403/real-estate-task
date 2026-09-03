@@ -14,7 +14,7 @@ export default function InquiryModal({ inquiry, onClose, isOpen }) {
           <X size={20} />
         </button>
         <h2 className="text-xl font-extrabold text-gray-900 mb-1 flex items-center gap-2">
-          <MessageSquare className="text-orange-500" size={22} /> Inquiry
+          Inquiry
           Details
         </h2>
         <p className="text-xs text-gray-400 mb-6">
