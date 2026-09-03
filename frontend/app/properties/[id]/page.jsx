@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import axios from "axios";
 import {
@@ -14,12 +14,10 @@ import {
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
-  X,
 } from "lucide-react";
 import Link from "next/link";
-import PropertyCard from "@/components/PropertyCard";
+import InquiryModal from "@/components/InquiryModal"; // தனி ஃபார்ம் காம்போனென்ட் இறக்குமதி
 
-// இந்திய முறைப்படி (Indian Numbering System) பிரைஸை மாற்ற Helper Function
 const formatIndianCurrency = (num) => {
   if (!num) return "0";
   return Number(num).toLocaleString("en-IN");
@@ -32,7 +30,6 @@ export default function PropertyDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(0);
 
-  // Inquiry Modal States
   const [inquiryModal, setInquiryModal] = useState(false);
   const [inquiryForm, setInquiryForm] = useState({
     name: "",
@@ -42,8 +39,6 @@ export default function PropertyDetailsPage() {
     message: "",
   });
   const [submitting, setSubmitting] = useState(false);
-
-  const scrollRef = useRef(null);
 
   useEffect(() => {
     if (id) {
@@ -66,12 +61,11 @@ export default function PropertyDetailsPage() {
               ? res.data.properties
               : res.data;
 
-            // Filter by BOTH same City AND same Property Type
             const filtered = propertiesList.filter(
               (item) =>
                 item.city?.toLowerCase() === currentCity.toLowerCase() &&
                 item.property_type?.toLowerCase() ===
-                  currentType?.toLowerCase() &&
+                currentType?.toLowerCase() &&
                 item.id !== Number(id),
             );
             setRelatedProperties(filtered);
@@ -86,6 +80,15 @@ export default function PropertyDetailsPage() {
 
   const handleInquiryChange = (e) => {
     setInquiryForm({ ...inquiryForm, [e.target.name]: e.target.value });
+  };
+
+  const handleContactAgentClick = () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Please login or register first to contact the agent!");
+      return;
+    }
+    setInquiryModal(true);
   };
 
   const handleInquirySubmit = async (e) => {
@@ -155,25 +158,14 @@ export default function PropertyDetailsPage() {
     }
   }
 
-  const handleNextImage = () => {
-    if (images.length > 0) {
-      setActiveImage((prev) => (prev + 1) % images.length);
-    }
-  };
-
-  const handlePrevImage = () => {
-    if (images.length > 0) {
-      setActiveImage((prev) => (prev - 1 + images.length) % images.length);
-    }
-  };
-
   const isPlot = property.property_type?.toLowerCase() === "plot";
+  const agentDisplayName =
+    property.agent_name || property.user_name || "Agent Name";
 
   return (
     <div className="min-h-screen bg-gray-50/50 text-gray-800 pb-16">
-      {/* Banner Section */}
+      {/* Banner */}
       <div className="relative add-property-bg text-white py-20 px-6 mb-8 overflow-hidden bg-gradient-to-r from-gray-900 to-gray-800 shadow-sm">
-        <div className="absolute inset-0 bg-cover bg-center mix-blend-overlay opacity-30 z-0"></div>
         <div className="max-w-7xl mx-auto relative z-10 flex items-center justify-between">
           <div>
             <Link
@@ -193,7 +185,7 @@ export default function PropertyDetailsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Image Gallery Layout */}
+            {/* Image Gallery */}
             <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
               <div className="h-[380px] md:h-[450px] bg-gray-100 rounded-xl overflow-hidden relative shadow-inner mb-4">
                 {images.length > 0 ? (
@@ -206,14 +198,21 @@ export default function PropertyDetailsPage() {
                     {images.length > 1 && (
                       <>
                         <button
-                          onClick={handlePrevImage}
-                          className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2.5 rounded-full shadow-lg text-gray-700 transition cursor-pointer"
+                          onClick={() =>
+                            setActiveImage(
+                              (prev) =>
+                                (prev - 1 + images.length) % images.length,
+                            )
+                          }
+                          className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/95 p-2.5 rounded-full shadow-lg text-gray-700 cursor-pointer"
                         >
                           <ChevronLeft size={20} />
                         </button>
                         <button
-                          onClick={handleNextImage}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2.5 rounded-full shadow-lg text-gray-700 transition cursor-pointer"
+                          onClick={() =>
+                            setActiveImage((prev) => (prev + 1) % images.length)
+                          }
+                          className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/95 p-2.5 rounded-full shadow-lg text-gray-700 cursor-pointer"
                         >
                           <ChevronRight size={20} />
                         </button>
@@ -227,7 +226,6 @@ export default function PropertyDetailsPage() {
                 )}
               </div>
 
-              {/* Thumbnails Row */}
               {images.length > 1 && (
                 <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
                   {images.map((img, idx) => (
@@ -251,119 +249,124 @@ export default function PropertyDetailsPage() {
               )}
             </div>
 
-            {/* Title & Price Section */}
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-              <div>
-                <span className="bg-orange-100 text-orange-600 text-xs px-3 py-1 rounded-md font-semibold inline-block mb-2">
-                  {property.property_type || "House"}
-                </span>
-                <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-1">
-                  {property.title}
-                </h1>
-                <p className="flex items-center gap-1.5 text-gray-500 text-sm font-medium">
-                  <MapPin size={16} className="text-orange-500" />{" "}
-                  {property.city}
-                </p>
-              </div>
-              <div className="text-left md:text-right">
-                <span className="text-xs text-gray-400 block uppercase tracking-wider font-semibold">
-                  Price
-                </span>
-                <p className="text-orange-600 font-extrabold text-2xl md:text-3xl flex items-center md:justify-end">
-                  <IndianRupee size={24} />
-                  {formatIndianCurrency(property.price)}
-                </p>
-              </div>
-            </div>
-
-            {/* Specifications Grid - Hidden for Plots */}
-            {!isPlot && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                <div className="flex items-center gap-3 bg-white p-4 rounded-xl border border-gray-100 shadow-sm text-gray-700 font-medium">
-                  <Bed className="text-orange-500 shrink-0" size={20} />
-                  <span className="text-sm">
-                    {property.bedrooms ? `${property.bedrooms} BHK` : "N/A"}
-                  </span>
-                </div>
-                <div className="flex items-center gap-3 bg-white p-4 rounded-xl border border-gray-100 shadow-sm text-gray-700 font-medium">
-                  <Bath className="text-orange-500 shrink-0" size={20} />
-                  <span className="text-sm">
-                    {property.bathrooms ? `${property.bathrooms} Baths` : "N/A"}
-                  </span>
-                </div>
-                <div className="flex items-center gap-3 bg-white p-4 rounded-xl border border-gray-100 shadow-sm text-gray-700 font-medium">
-                  <Maximize className="text-orange-500 shrink-0" size={20} />
-                  <span className="text-sm">
-                    {property.area_sqft ? `${property.area_sqft} sq.ft` : "N/A"}
-                  </span>
-                </div>
-                <div className="flex items-center gap-3 bg-white p-4 rounded-xl border border-gray-100 shadow-sm text-gray-700 font-medium">
-                  <Car className="text-orange-500 shrink-0" size={20} />
-                  <span className="text-sm">
-                    {property.parking ? `${property.parking}` : "None"}
-                  </span>
-                </div>
-                <div className="flex items-center gap-3 bg-white p-4 rounded-xl border border-gray-100 shadow-sm text-gray-700 font-medium">
-                  <CheckCircle2
-                    className="text-orange-500 shrink-0"
-                    size={20}
-                  />
-                  <span className="text-sm">
-                    {property.furnishing || "N/A"}
-                  </span>
-                </div>
-                <div className="flex items-center gap-3 bg-white p-4 rounded-xl border border-gray-100 shadow-sm text-gray-700 font-medium">
-                  <Compass className="text-orange-500 shrink-0" size={20} />
-                  <span className="text-sm">
-                    {property.facing ? `${property.facing} Facing` : "N/A"}
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {/* Description Section */}
+            {/* Specs Grid */}
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
-              <h3 className="text-xl font-bold text-gray-900 border-b pb-3">
-                Description
-              </h3>
-              <p className="text-gray-600 text-base leading-relaxed">
-                {property.description || "No description available."}
-              </p>
+              {/* Title & Price */}
+              <div className="bg-white p-6 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                  <span className="bg-orange-100 text-orange-600 text-xs px-3 py-1 rounded-md font-semibold inline-block mb-2">
+                    {property.property_type || "House"}
+                  </span>
+                  <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-1">
+                    {property.title}
+                  </h1>
+                  <p className="flex items-center gap-1.5 text-gray-500 text-sm font-medium">
+                    <MapPin size={16} className="text-orange-500" />{" "}
+                    {property.city}
+                  </p>
+                </div>
+                <div className="text-left md:text-right">
+                  <span className="text-xs text-gray-400 block uppercase tracking-wider font-semibold">
+                    Price
+                  </span>
+                  <p className="text-orange-600 font-extrabold text-2xl md:text-3xl flex items-center md:justify-end">
+                    <IndianRupee size={24} />
+                    {formatIndianCurrency(property.price)}
+                  </p>
+                </div>
+              </div>
+
+              {!isPlot && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  <div className="flex items-center gap-3 bg-white p-4 rounded-xl border border-gray-100 shadow-sm text-gray-700 font-medium">
+                    <Bed className="text-orange-500 shrink-0" size={20} />
+                    <span className="text-sm">
+                      {property.bedrooms ? `${property.bedrooms} BHK` : "N/A"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3 bg-white p-4 rounded-xl border border-gray-100 shadow-sm text-gray-700 font-medium">
+                    <Bath className="text-orange-500 shrink-0" size={20} />
+                    <span className="text-sm">
+                      {property.bathrooms
+                        ? `${property.bathrooms} Baths`
+                        : "N/A"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3 bg-white p-4 rounded-xl border border-gray-100 shadow-sm text-gray-700 font-medium">
+                    <Maximize className="text-orange-500 shrink-0" size={20} />
+                    <span className="text-sm">
+                      {property.area_sqft
+                        ? `${property.area_sqft} sq.ft`
+                        : "N/A"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3 bg-white p-4 rounded-xl border border-gray-100 shadow-sm text-gray-700 font-medium">
+                    <Car className="text-orange-500 shrink-0" size={20} />
+                    <span className="text-sm">
+                      {property.parking || "None"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3 bg-white p-4 rounded-xl border border-gray-100 shadow-sm text-gray-700 font-medium">
+                    <CheckCircle2
+                      className="text-orange-500 shrink-0"
+                      size={20}
+                    />
+                    <span className="text-sm">
+                      {property.furnishing || "N/A"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3 bg-white p-4 rounded-xl border border-gray-100 shadow-sm text-gray-700 font-medium">
+                    <Compass className="text-orange-500 shrink-0" size={20} />
+                    <span className="text-sm">
+                      {property.facing ? `${property.facing} Facing` : "N/A"}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Description */}
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 border-b pb-3">
+                  Description
+                </h3>
+                <p className="text-gray-600 text-base leading-relaxed">
+                  {property.description || "No description available."}
+                </p>
+              </div>
             </div>
           </div>
 
-          {/* Right Column (Agent Contact & Similar Properties Nearby) */}
+          {/* Right Column */}
           <div className="space-y-6">
             {/* Agent Contact Card */}
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold text-xl uppercase">
-                  {property.agent_name ? property.agent_name[0] : "A"}
+                  {agentDisplayName[0]}
                 </div>
                 <div>
                   <h4 className="text-lg font-bold text-gray-900">
-                    {property.agent_name || "Agent Name"}
+                    {agentDisplayName}
                   </h4>
                   <p className="text-xs text-gray-500 font-medium">
-                    Real Estate Agent
+                    Real Estate Agent / Owner
                   </p>
                 </div>
               </div>
 
               <button
-                onClick={() => setInquiryModal(true)}
+                onClick={handleContactAgentClick}
                 className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-xl shadow-md transition duration-200 cursor-pointer flex items-center justify-center gap-2"
               >
                 Contact Agent
               </button>
             </div>
 
-            {/* Properties Nearby Section (Filtered by Same Type) */}
+            {/* Similar Properties */}
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
               <h3 className="text-xl font-bold text-gray-900 border-b pb-3">
                 Similar in {property.city}
               </h3>
-
               {relatedProperties.length > 0 ? (
                 <div className="space-y-4 max-h-[600px] overflow-y-auto pr-1">
                   {relatedProperties.slice(0, 4).map((item) => {
@@ -381,10 +384,6 @@ export default function PropertyDetailsPage() {
                         }
                       } catch (e) {}
                     }
-
-                    const isItemPlot =
-                      item.property_type?.toLowerCase() === "plot";
-
                     return (
                       <Link
                         key={item.id}
@@ -395,7 +394,7 @@ export default function PropertyDetailsPage() {
                           <img
                             src={itemImg}
                             alt={item.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                            className="w-full h-full object-cover"
                           />
                         </div>
                         <div className="flex flex-col justify-between flex-1">
@@ -408,29 +407,6 @@ export default function PropertyDetailsPage() {
                               {item.title}
                             </h4>
                           </div>
-                          {!isItemPlot ? (
-                            <div className="flex items-center gap-3 text-xs text-gray-500 font-medium">
-                              <span className="flex items-center gap-1">
-                                <Bed size={12} className="text-orange-500" />{" "}
-                                {item.bedrooms ?? 0}
-                              </span>
-                              <span className="flex items-center gap-1">
-                                <Bath size={12} className="text-orange-500" />{" "}
-                                {item.bathrooms ?? 0}
-                              </span>
-                              <span className="flex items-center gap-1">
-                                <Maximize
-                                  size={12}
-                                  className="text-orange-500"
-                                />{" "}
-                                {item.area_sqft ?? 0}ft²
-                              </span>
-                            </div>
-                          ) : (
-                            <div className="text-xs text-orange-500 font-semibold">
-                              Plot Property
-                            </div>
-                          )}
                         </div>
                       </Link>
                     );
@@ -438,7 +414,7 @@ export default function PropertyDetailsPage() {
                 </div>
               ) : (
                 <p className="text-sm text-gray-400 py-4 text-center">
-                  No similar properties found in this city.
+                  No similar properties found.
                 </p>
               )}
             </div>
@@ -446,103 +422,15 @@ export default function PropertyDetailsPage() {
         </div>
       </div>
 
-      {/* Inquiry Modal Popup */}
-      {inquiryModal && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 relative shadow-2xl max-h-[90vh] overflow-y-auto">
-            <button
-              onClick={() => setInquiryModal(false)}
-              className="absolute top-4 right-4 bg-gray-100 hover:bg-gray-200 text-gray-600 p-2 rounded-full transition cursor-pointer"
-            >
-              <X size={20} />
-            </button>
-            <h3 className="text-xl font-bold text-gray-900 mb-4">
-              Contact <span className="text-orange-500">Agent</span>
-            </h3>
-            <form onSubmit={handleInquirySubmit} className="space-y-3">
-              <div>
-                <label className="block text-gray-700 text-xs font-semibold mb-1">
-                  Your Name
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={inquiryForm.name}
-                  onChange={handleInquiryChange}
-                  placeholder="Enter your name"
-                  className="w-full px-4 py-2 border rounded-xl text-black bg-gray-50 text-sm focus:ring-2 focus:ring-orange-500"
-                  required
-                />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-gray-700 text-xs font-semibold mb-1">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={inquiryForm.email}
-                    onChange={handleInquiryChange}
-                    placeholder="Enter your email"
-                    className="w-full px-4 py-2 border rounded-xl text-black bg-gray-50 text-sm focus:ring-2 focus:ring-orange-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-gray-700 text-xs font-semibold mb-1">
-                    Phone Number
-                  </label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={inquiryForm.phone}
-                    onChange={handleInquiryChange}
-                    placeholder="Enter phone number"
-                    className="w-full px-4 py-2 border rounded-xl text-black bg-gray-50 text-sm focus:ring-2 focus:ring-orange-500"
-                    required
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-gray-700 text-xs font-semibold mb-1">
-                  Your Location
-                </label>
-                <input
-                  type="text"
-                  name="location"
-                  value={inquiryForm.location}
-                  onChange={handleInquiryChange}
-                  placeholder="e.g. Chennai, Madurai"
-                  className="w-full px-4 py-2 border rounded-xl text-black bg-gray-50 text-sm focus:ring-2 focus:ring-orange-500"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700 text-xs font-semibold mb-1">
-                  Message
-                </label>
-                <textarea
-                  rows="3"
-                  name="message"
-                  value={inquiryForm.message}
-                  onChange={handleInquiryChange}
-                  placeholder="I am interested in this property. Please contact me."
-                  className="w-full px-4 py-2 border rounded-xl text-black bg-gray-50 text-sm focus:ring-2 focus:ring-orange-500"
-                  required
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl shadow-md transition text-sm disabled:opacity-50 cursor-pointer mt-2"
-              >
-                {submitting ? "Sending..." : "Send Inquiry"}
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* தனியாக பிரிக்கப்பட்ட Inquiry Modal Component இங்கே கால் செய்யப்பட்டுள்ளது */}
+      <InquiryModal
+        isOpen={inquiryModal}
+        onClose={() => setInquiryModal(false)}
+        inquiryForm={inquiryForm}
+        onChange={handleInquiryChange}
+        onSubmit={handleInquirySubmit}
+        submitting={submitting}
+      />
     </div>
   );
 }
