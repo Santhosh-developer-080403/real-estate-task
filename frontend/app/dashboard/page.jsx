@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import API, { API_URL } from "@/services/api";
 import { useSearchParams } from "next/navigation";
 import {
@@ -16,7 +16,8 @@ import MyProperties from "@/components/MyProperties";
 import InquiriesList from "@/components/InquiriesList";
 import EditProfile from "@/components/EditProfile";
 
-export default function DashboardPage() {
+// 1. Ella main logic-um intha component kulla irukum
+function DashboardContent() {
   const [activeTab, setActiveTab] = useState("properties");
   const [myProperties, setMyProperties] = useState([]);
   const [propLoading, setPropLoading] = useState(true);
@@ -90,9 +91,19 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
-    fetchMyProperties();
-    fetchInquiries();
-    fetchUserProfile();
+    const loadDashboardData = async () => {
+      try {
+        await Promise.all([
+          fetchMyProperties(),
+          fetchInquiries(),
+          fetchUserProfile(),
+        ]);
+      } catch (error) {
+        console.error("Failed to load dashboard data:", error);
+      }
+    };
+
+    loadDashboardData();
   }, []);
 
   const handleDelete = async (id) => {
@@ -143,23 +154,22 @@ export default function DashboardPage() {
     setProfileForm({ ...profileForm, [e.target.name]: e.target.value });
   };
 
-const handleProfileSubmit = async (e) => {
-  e.preventDefault();
-  setProfileUpdating(true);
-  try {
-    const payload = { ...profileForm };
-    if (!payload.password) delete payload.password;
+  const handleProfileSubmit = async (e) => {
+    e.preventDefault();
+    setProfileUpdating(true);
+    try {
+      const payload = { ...profileForm };
+      if (!payload.password) delete payload.password;
 
-    const res = await API.put("/api/auth/profile", payload);
-    alert("Profile updated successfully!");
-  } catch (err) {
-    // Inga backend tharura real error message-ah console-la pakalam
-    console.error("Failed to update profile", err.response?.data || err);
-    alert(err.response?.data?.message || "Failed to update profile.");
-  } finally {
-    setProfileUpdating(false);
-  }
-};
+      await API.put("/api/auth/profile", payload);
+      alert("Profile updated successfully!");
+    } catch (err) {
+      console.error("Failed to update profile", err.response?.data || err);
+      alert(err.response?.data?.message || "Failed to update profile.");
+    } finally {
+      setProfileUpdating(false);
+    }
+  };
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
@@ -206,7 +216,6 @@ const handleProfileSubmit = async (e) => {
     }
   };
 
-  // DashboardPage functionulla:
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
 
@@ -287,7 +296,7 @@ const handleProfileSubmit = async (e) => {
         />
       )}
 
-      {/* MODALS REMAINS IN PARENT CONTAINER */}
+      {/* MODALS */}
       {viewModal && selectedProperty && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 relative shadow-xl">
@@ -529,5 +538,20 @@ const handleProfileSubmit = async (e) => {
         </div>
       )}
     </div>
+  );
+}
+
+// 2. Next.js App Router-ku thevaiyana Suspense wrapper export
+export default function DashboardPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="text-center py-20 font-semibold text-gray-500">
+          Loading dashboard...
+        </div>
+      }
+    >
+      <DashboardContent />
+    </Suspense>
   );
 }

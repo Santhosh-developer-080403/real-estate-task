@@ -29,7 +29,7 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-, "app/page.tsx", "app/properties/[id]/page.jsx"  ],
+, "app/page.tsx", "app/properties/[id]/page.jsx", "app/add-property/page.jsx", "app/dashboard/page.jsx", "app/login/page.jsx", "app/register/page.jsx", "components/EditProfile.jsx", "components/Footer.jsx", "components/InquiriesList.jsx", "components/InquiryModal.jsx", "components/MyProperties.jsx", "components/PropertyCard.jsx", "components/Navbar.jsx", "components/ProtectedLayout.jsx"  ],
   "exclude": ["node_modules"]
 }
 
