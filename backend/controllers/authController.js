@@ -132,7 +132,7 @@
 // module.exports = router;
 // module.exports = { register, login, getUserProfile, updateProfile };
 
-const pool = require("../config/db");
+const { pool } = require("../config/db");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 

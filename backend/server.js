@@ -1,13 +1,49 @@
+// const express = require("express");
+// const cors = require("cors");
+// require("dotenv").config();
+// const pool = require("./config/db");
+// const authRoutes = require("./routes/authRoutes");
+// const propertyRoutes = require("./routes/propertyRoutes");
+// const inquiryRoutes = require("./routes/inquiryRoutes");
+// const swaggerDocs = require("./config/swagger");
+// const app = express();
+// const path = require("path");
+
+// // Middleware
+// app.use(cors());
+// app.use(express.json());
+
+// // Routes
+// app.use("/api/auth", authRoutes);
+// app.use("/api/properties", propertyRoutes);
+// app.use("/api/inquiries", inquiryRoutes);
+// app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// swaggerDocs(app);
+
+// app.get("/", (req, res) => {
+//   res.json({ message: "Real Estate Backend API is running successfully!" });
+// });
+
+// const PORT = process.env.PORT || 5000;
+// app.listen(PORT, () => {
+//   console.log(`Server is running on port ${PORT}`);
+// });
+
+
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const pool = require("./config/db");
+
+// Destructure pool directly
+const { pool } = require("./config/db"); 
+
 const authRoutes = require("./routes/authRoutes");
 const propertyRoutes = require("./routes/propertyRoutes");
 const inquiryRoutes = require("./routes/inquiryRoutes");
 const swaggerDocs = require("./config/swagger");
-const app = express();
 const path = require("path");
+
+const app = express();
 
 // Middleware
 app.use(cors());
@@ -25,6 +61,7 @@ app.get("/", (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

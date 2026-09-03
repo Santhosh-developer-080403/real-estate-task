@@ -14,6 +14,19 @@ export default function Navbar() {
   const dropdownRef = useRef(null); // <-- Dropdown element-ஐ track பண்ண ref
   const router = useRouter();
 
+  // const checkAuth = () => {
+  //   const storedToken = localStorage.getItem("token");
+  //   const storedName = localStorage.getItem("userName");
+
+  //   setToken(storedToken);
+
+  //   if (storedName && storedName !== "undefined" && storedName !== "null") {
+  //     setUserName(storedName);
+  //   } else {
+  //     setUserName("User");
+  //   }
+  // };
+
   const checkAuth = () => {
     const storedToken = localStorage.getItem("token");
     const storedName = localStorage.getItem("userName");
@@ -27,7 +40,20 @@ export default function Navbar() {
     }
   };
 
+  // useEffect(() => {
+
+  //   window.addEventListener("storage", checkAuth);
+  //   window.addEventListener("auth-change", checkAuth);
+
+  //   return () => {
+  //     window.removeEventListener("storage", checkAuth);
+  //     window.removeEventListener("auth-change", checkAuth);
+  //   };
+  // }, []);
+
   useEffect(() => {
+    // Check auth immediately when Navbar mounts / page refreshes
+    checkAuth();
 
     window.addEventListener("storage", checkAuth);
     window.addEventListener("auth-change", checkAuth);

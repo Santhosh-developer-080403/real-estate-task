@@ -3,9 +3,7 @@ import { useState, useEffect, Suspense } from "react";
 import API, { API_URL } from "@/services/api";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import {
-  ArrowLeft,
-} from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 import MyProperties from "@/components/MyProperties";
 import InquiriesList from "@/components/InquiriesList";
@@ -148,14 +146,38 @@ function DashboardContent() {
     setProfileForm({ ...profileForm, [e.target.name]: e.target.value });
   };
 
+  // const handleProfileSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setProfileUpdating(true);
+  //   try {
+  //     const payload = { ...profileForm };
+  //     if (!payload.password) delete payload.password;
+
+  //     await API.put("/api/auth/profile", payload);
+  //     alert("Profile updated successfully!");
+  //   } catch (err) {
+  //     console.error("Failed to update profile", err.response?.data || err);
+  //     alert(err.response?.data?.message || "Failed to update profile.");
+  //   } finally {
+  //     setProfileUpdating(false);
+  //   }
+  // };
+
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
     setProfileUpdating(true);
+
     try {
       const payload = { ...profileForm };
+
       if (!payload.password) delete payload.password;
 
       await API.put("/api/auth/profile", payload);
+
+      // Update navbar name immediately
+      localStorage.setItem("userName", payload.name);
+      window.dispatchEvent(new Event("auth-change"));
+
       alert("Profile updated successfully!");
     } catch (err) {
       console.error("Failed to update profile", err.response?.data || err);
@@ -164,7 +186,6 @@ function DashboardContent() {
       setProfileUpdating(false);
     }
   };
-
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     setUpdating(true);
@@ -176,7 +197,10 @@ function DashboardContent() {
       formData.append("property_type", editForm.property_type);
       formData.append("price", editForm.price);
 
-      formData.append("existingImages", JSON.stringify(editForm.existingImages));
+      formData.append(
+        "existingImages",
+        JSON.stringify(editForm.existingImages),
+      );
 
       if (editForm.newImages && editForm.newImages.length > 0) {
         for (let i = 0; i < editForm.newImages.length; i++) {
@@ -204,7 +228,9 @@ function DashboardContent() {
       };
 
       setMyProperties(
-        myProperties.map((p) => (p.id === selectedProperty.id ? updatedData : p)),
+        myProperties.map((p) =>
+          p.id === selectedProperty.id ? updatedData : p,
+        ),
       );
       setEditModal(false);
       alert("Property updated successfully!");
@@ -235,7 +261,6 @@ function DashboardContent() {
   // }, [tabParam]);
 
   return (
-
     <div>
       <div className="relative our-dashboard-bg  text-white py-24 px-6 overflow-hidden bg-orange-600">
         <div className="absolute inset-0 bg-cover bg-center mix-blend-overlay opacity-40 z-0"></div>
@@ -254,8 +279,6 @@ function DashboardContent() {
         </div>
       </div>
       <div className="max-w-6xl mx-auto px-6 py-10 min-h-screen text-gray-800 relative">
-
-
         <h2 className="text-3xl text-center font-extrabold mb-20 text-gray-900 mb-6">
           User <span className="text-orange-500">Dashboard</span>
         </h2>
@@ -315,7 +338,14 @@ function DashboardContent() {
         />
 
         <EditPropertyModal
+          // editForm={editForm}
+          // updating={updating}
+          // onChange={handleEditChange}
+          // onSubmit={handleEditSubmit}
+          // onClose={() => setEditModal(false)}
+          // isOpen={editModal && selectedProperty}
           editForm={editForm}
+          setEditForm={setEditForm}
           updating={updating}
           onChange={handleEditChange}
           onSubmit={handleEditSubmit}
@@ -324,7 +354,6 @@ function DashboardContent() {
         />
       </div>
     </div>
-
   );
 }
 

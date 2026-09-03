@@ -1,4 +1,4 @@
-const pool = require("../config/db");
+const {pool} = require("../config/db");
 
 // Send Inquiry (Supports Guests + Logged-in users with Name, Email, Phone, Location, Message)
 const sendInquiry = async (req, res) => {

@@ -43,7 +43,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative min-h-[85vh] w-full flex items-center justify-center overflow-hidden bg-gray-50 px-4">
+    <div className="relative min-h-[85vh] w-full flex items-center justify-center overflow-hidden bg-gray-50 px-4 !bg-[#ff9701]">
       <div className="absolute inset-0 bg-gradient-to-br from-orange-50/50 via-white to-orange-50/30 z-0"></div>
 
       <div className="relative z-10 w-full max-w-md">
