@@ -100,7 +100,6 @@ export default function Home() {
             <div className="flex items-center px-4 py-3 w-full lg:w-1/5 border-b lg:border-b-0 lg:border-r border-gray-200 relative">
               <HomeIcon size={18} className="text-orange-500 mr-2.5 shrink-0" />
               <select
-                className="custom-dropdown"
                 value={propertyType ? `${propertyType}_${bedrooms}` : ""}
                 onChange={(e) => {
                   const val = e.target.value;
@@ -114,7 +113,7 @@ export default function Home() {
                   }
                   setPage(1);
                 }}
-                className="w-full bg-transparent text-sm text-gray-800 focus:outline-none cursor-pointer font-medium appearance-none pr-6"
+                className="custom-dropdown w-full bg-transparent text-sm text-gray-800 focus:outline-none cursor-pointer font-medium appearance-none pr-6"
               >
                 <option value="">Property & BHK</option>
                 <option value="Villa_1">Villa, 1 Bed</option>
@@ -147,13 +146,12 @@ export default function Home() {
                 className="text-orange-500 mr-2.5 shrink-0"
               />
               <select
-                className="custom-dropdown"
                 value={budgetRange}
                 onChange={(e) => {
                   setBudgetRange(e.target.value);
                   setPage(1);
                 }}
-                className="w-full bg-transparent text-sm text-gray-800 focus:outline-none cursor-pointer font-medium appearance-none pr-6"
+                className="custom-dropdown w-full bg-transparent text-sm text-gray-800 focus:outline-none cursor-pointer font-medium appearance-none pr-6"
               >
                 <option value="">Select Budget</option>
                 <option value="0-5000000">₹0 - ₹50 Lac</option>
@@ -174,13 +172,14 @@ export default function Home() {
                 size={16}
                 className="text-orange-500 mr-2.5 shrink-0"
               />
-              <select className="custom-dropdown"
+              <select
+               
                 value={sort}
                 onChange={(e) => {
                   setSort(e.target.value);
                   setPage(1);
                 }}
-                className="w-full bg-transparent text-sm text-gray-800 focus:outline-none cursor-pointer font-medium appearance-none pr-6"
+                className="custom-dropdown w-full bg-transparent text-sm text-gray-800 focus:outline-none cursor-pointer font-medium appearance-none pr-6"
               >
                 <option value="">Sort By: Default</option>
                 <option value="price_asc">Price: Low to High</option>

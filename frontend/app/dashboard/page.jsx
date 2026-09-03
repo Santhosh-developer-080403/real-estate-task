@@ -143,21 +143,23 @@ export default function DashboardPage() {
     setProfileForm({ ...profileForm, [e.target.name]: e.target.value });
   };
 
-  const handleProfileSubmit = async (e) => {
-    e.preventDefault();
-    setProfileUpdating(true);
-    try {
-      const payload = { ...profileForm };
-      if (!payload.password) delete payload.password;
-      await API.put("/api/auth/profile", payload);
-      alert("Profile updated successfully!");
-    } catch (err) {
-      console.error("Failed to update profile", err);
-      alert("Failed to update profile.");
-    } finally {
-      setProfileUpdating(false);
-    }
-  };
+const handleProfileSubmit = async (e) => {
+  e.preventDefault();
+  setProfileUpdating(true);
+  try {
+    const payload = { ...profileForm };
+    if (!payload.password) delete payload.password;
+
+    const res = await API.put("/api/auth/profile", payload);
+    alert("Profile updated successfully!");
+  } catch (err) {
+    // Inga backend tharura real error message-ah console-la pakalam
+    console.error("Failed to update profile", err.response?.data || err);
+    alert(err.response?.data?.message || "Failed to update profile.");
+  } finally {
+    setProfileUpdating(false);
+  }
+};
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
