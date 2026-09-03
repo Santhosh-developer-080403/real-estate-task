@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import API, { API_URL } from "@/services/api";
+import { useSearchParams } from "next/navigation";
 import {
   Building2,
   MessageSquare,
@@ -202,6 +203,16 @@ export default function DashboardPage() {
       return [];
     }
   };
+
+  // DashboardPage functionulla:
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
+
+  useEffect(() => {
+    if (tabParam) {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10 min-h-screen text-gray-800 relative">

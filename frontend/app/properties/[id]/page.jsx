@@ -173,14 +173,17 @@ export default function PropertyDetailsPage() {
 
   const bannerImage = images.length > 0 ? images[activeImage] : "";
 
-  const agentDisplayName =
-    property.agent_name ||
-    property.user_name ||
-    property.owner_name ||
-    property.posted_by ||
-    property.contact_person ||
-    "Property Owner";
-
+const agentDisplayName =
+  property.user?.name ||
+  property.username ||
+  property.owner ||
+  property.agent_name ||
+  property.user_name ||
+  property.owner_name ||
+  property.posted_by ||
+  property.contact_person ||
+  "Property Owner";
+  
   return (
     <div className="min-h-screen bg-gray-50/50 text-gray-800 pb-16">
       {/* Dynamic Banner Matching Reference Design */}
