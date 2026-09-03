@@ -1,6 +1,6 @@
 const pool = require("../config/db");
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken"); // <--- Intha line irukanum machan!
 
 // Register Controller
 const register = async (req, res) => {
@@ -26,12 +26,10 @@ const register = async (req, res) => {
       [name, email, hashedPassword],
     );
 
-    res
-      .status(201)
-      .json({
-        message: "User registered successfully!",
-        user: newUser.rows[0],
-      });
+    res.status(201).json({
+      message: "User registered successfully!",
+      user: newUser.rows[0],
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -61,7 +59,16 @@ const login = async (req, res) => {
       expiresIn: "1d",
     });
 
-    res.json({ message: "Login successful!", token, userId: user.rows[0].id });
+    // Send token and user info (including name)
+    res.json({
+      message: "Login successful!",
+      token,
+      user: {
+        id: user.rows[0].id,
+        name: user.rows[0].name,
+        email: user.rows[0].email,
+      },
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

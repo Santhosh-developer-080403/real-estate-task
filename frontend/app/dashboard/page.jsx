@@ -111,23 +111,37 @@ export default function DashboardPage() {
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     setUpdating(true);
+
     try {
+      // 1. Munnaadiye irukkura old images-ah oru variable-la save panrom
+      const existingImages = selectedProperty.images;
+
+      // 2. Backend-ku update request anupprom
       const res = await API.put(
         `/api/properties/${selectedProperty.id}`,
         editForm,
       );
 
-      // FIX: Backend enna thanthalum, namma old images-ah strict-ah preserve pannidrom
+      // 3. Backend response-la iruntha data-vum edukrom
+      const responseData = res.data.property || res.data;
+
+      // 4. Final updated data: Oru vela backend response-la images illana, namma save pani vecha `existingImages`-ah use panrom
       const updatedData = {
-        ...(res.data.property || res.data),
-        images: selectedProperty.images, // Old images-ah apadiye fix pannidrom
+        ...selectedProperty,
+        ...responseData,
+        images:
+          responseData.images !== undefined && responseData.images !== null
+            ? responseData.images
+            : existingImages,
       };
 
+      // 5. State-ah update panrom
       setMyProperties(
         myProperties.map((p) =>
           p.id === selectedProperty.id ? updatedData : p,
         ),
       );
+
       setEditModal(false);
       alert("Property updated successfully!");
     } catch (err) {
@@ -137,7 +151,6 @@ export default function DashboardPage() {
       setUpdating(false);
     }
   };
-
   // Helper to safely extract images
   const getImagesArray = (propertyImages) => {
     if (!propertyImages) return [];
@@ -148,6 +161,9 @@ export default function DashboardPage() {
       return [];
     }
   };
+
+  console.log("myProperties", myProperties);
+  console.log("inquiries", inquiries);
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10 min-h-screen text-gray-800 relative">
@@ -435,6 +451,7 @@ export default function DashboardPage() {
                     Property Type
                   </label>
                   <select
+                    className="custom-dropdown"
                     name="property_type"
                     value={editForm.property_type}
                     onChange={handleEditChange}

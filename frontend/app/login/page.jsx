@@ -3,7 +3,8 @@ import { useState } from "react";
 import API from "@/services/api";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Key } from "lucide-react";
+import { Home } from "lucide-react";
+import axios from "axios";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -11,42 +12,59 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const router = useRouter();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await API.post("/api/auth/login", { email, password });
-      localStorage.setItem("token", response.data.token);
+const handleLogin = async (e) => {
+  e.preventDefault();
+  try {
+    const res = await axios.post("http://localhost:5000/api/auth/login", {
+      email,
+      password,
+    });
 
-      window.dispatchEvent(new Event("auth-change"));
-      router.push("/");
-    } catch (err) {
-      setError(err.response?.data?.message || "Login failed");
-    }
-  };
+    localStorage.setItem("token", res.data.token);
+
+    // Safe-a check panni name-ah localStorage-la podrom
+    const userName =
+      res.data.user?.name || res.data.name || res.data.username || "User";
+    localStorage.setItem("userName", userName);
+
+    window.dispatchEvent(new Event("auth-change"));
+    router.push("/");
+  } catch (err) {
+    console.error("Login error:", err);
+    setError(
+      err.response?.data?.message ||
+        err.response?.data?.error ||
+        "Invalid email or password",
+    );
+  }
+};
 
   return (
-    <div className="relative min-h-[85vh] w-full flex items-center justify-center overflow-hidden bg-white">
-      <div className="absolute top-0 left-0 w-full md:w-1/2 h-full bg-orange-500 z-0"></div>
+    <div className="relative min-h-[85vh] w-full flex items-center justify-center overflow-hidden bg-gray-50 px-4">
+      {/* Background Subtle Gradient or Clean Look */}
+      <div className="absolute inset-0 bg-gradient-to-br from-orange-50/50 via-white to-orange-50/30 z-0"></div>
 
-      <div className="relative z-10 w-full max-w-md mx-4">
+      <div className="relative z-10 w-full max-w-md">
         <form
           onSubmit={handleLogin}
           autoComplete="off"
-          className="bg-white p-8 md:p-10 rounded-3xl shadow-2xl border border-orange-100"
+          className="bg-orange-500 p-8 md:p-10 rounded-3xl shadow-2xl shadow-orange-500/20 border border-orange-400 text-white"
         >
-          <h2 className="text-2xl md:text-3xl font-extrabold mb-8 text-center text-gray-800 leading-tight">
+          <h2 className="text-2xl md:text-3xl font-extrabold mb-8 text-center text-white leading-tight">
             Welcome to <br />
-            <span className="text-orange-500">Citi Estate</span>
+            <span className="text-orange-100 tracking-wide drop-shadow-sm">
+              Citi Estate
+            </span>
           </h2>
 
           {error && (
-            <p className="bg-red-50 text-red-500 border border-red-200 p-3 rounded-lg mb-4 text-sm text-center">
+            <p className="bg-red-500/20 text-white border border-red-200/40 p-3 rounded-xl mb-5 text-sm text-center backdrop-blur-sm font-medium">
               {error}
             </p>
           )}
 
           <div className="mb-5">
-            <label className="block text-gray-600 text-sm font-semibold mb-2">
+            <label className="block text-orange-100 text-sm font-semibold mb-2">
               Email
             </label>
             <input
@@ -55,14 +73,14 @@ export default function LoginPage() {
               autoComplete="off"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="name@example.com"
-              className="w-full px-4 py-3 border border-orange-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 text-black bg-orange-50/30 transition"
+              placeholder="Enter your email"
+              className="w-full px-4 py-3 border border-orange-400/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-white text-orange-500 placeholder-orange-500 bg-white transition text-sm"
               required
             />
           </div>
 
           <div className="mb-6">
-            <label className="block text-gray-600 text-sm font-semibold mb-2">
+            <label className="block text-orange-100 text-sm font-semibold mb-2">
               Password
             </label>
             <div className="relative">
@@ -73,26 +91,24 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full px-4 py-3 pr-10 border border-orange-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 text-black bg-orange-50/30 transition"
+                className="w-full px-4 py-3 pr-10 border border-orange-400/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-white text-orange-500 placeholder-orange-500 bg-white transition text-sm"
                 required
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-                <Key size={18} />
-              </span>
             </div>
           </div>
 
           <button
             type="submit"
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-orange-500/30 transition duration-200 uppercase tracking-wide text-sm"
+            className="w-full bg-white hover:bg-orange-50 text-orange-600 font-extrabold py-3.5 rounded-xl shadow-lg transition duration-200 uppercase tracking-wide text-sm cursor-pointer"
           >
             Login
           </button>
 
-          <p className="mt-6 text-center text-sm text-gray-600">Don't have an account?{" "}
+          <p className="mt-6 text-center text-sm text-orange-100">
+            Do not have an account?{" "}
             <Link
               href="/register"
-              className="text-orange-500 font-semibold hover:underline"
+              className="text-white font-bold underline hover:text-orange-200 transition"
             >
               Register
             </Link>

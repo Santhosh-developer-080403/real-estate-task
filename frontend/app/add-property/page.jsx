@@ -29,13 +29,36 @@ export default function AddPropertyPage() {
     facing: "East",
     area_sqft: "",
   });
+  const [displayPrice, setDisplayPrice] = useState("");
   const [images, setImages] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  // Indian Currency Formatter Function
+  const formatIndianCurrency = (value) => {
+    if (!value) return "";
+    const cleanNum = value.toString().replace(/[^0-9]/g, "");
+    if (!cleanNum) return "";
+    const lastThree = cleanNum.substring(cleanNum.length - 3);
+    const otherNumbers = cleanNum.substring(0, cleanNum.length - 3);
+    if (otherNumbers !== "") {
+      return (
+        otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + "," + lastThree
+      );
+    }
+    return lastThree;
+  };
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name === "price") {
+      const rawValue = value.replace(/[^0-9]/g, "");
+      setFormData({ ...formData, price: rawValue });
+      setDisplayPrice(formatIndianCurrency(rawValue));
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleFileChange = (e) => {
@@ -54,12 +77,16 @@ export default function AddPropertyPage() {
       data.append("city", formData.city);
       data.append("property_type", formData.property_type);
       data.append("price", Number(formData.price));
-      data.append("bedrooms", Number(formData.bedrooms));
-      data.append("bathrooms", Number(formData.bathrooms));
-      data.append("parking", formData.parking);
-      data.append("furnishing", formData.furnishing);
-      data.append("facing", formData.facing);
-      data.append("area_sqft", Number(formData.area_sqft));
+
+      // Plot-ah iruntha extra fields anuppa thevai illa
+      if (formData.property_type !== "Plot") {
+        data.append("bedrooms", Number(formData.bedrooms));
+        data.append("bathrooms", Number(formData.bathrooms));
+        data.append("parking", formData.parking);
+        data.append("furnishing", formData.furnishing);
+        data.append("facing", formData.facing);
+        data.append("area_sqft", Number(formData.area_sqft));
+      }
 
       for (let i = 0; i < images.length; i++) {
         data.append("images", images[i]);
@@ -77,6 +104,8 @@ export default function AddPropertyPage() {
       setLoading(false);
     }
   };
+
+  const isPlot = formData.property_type === "Plot";
 
   return (
     <div>
@@ -159,6 +188,7 @@ export default function AddPropertyPage() {
                 <Building size={16} className="text-orange-500" /> Property Type
               </label>
               <select
+                className="custom-dropdown"
                 name="property_type"
                 value={formData.property_type}
                 onChange={handleChange}
@@ -179,123 +209,140 @@ export default function AddPropertyPage() {
                 <IndianRupee size={16} className="text-orange-500" /> Price (₹)
               </label>
               <input
-                type="number"
+                type="text"
                 name="price"
-                value={formData.price}
+                value={displayPrice}
                 onChange={handleChange}
-                placeholder="e.g. 5500000"
+                placeholder="e.g. 55,00,000"
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm"
                 required
               />
             </div>
-            <div>
-              <label className="block text-gray-700 text-sm font-semibold mb-2 flex items-center gap-1">
-                <Maximize size={16} className="text-orange-500" /> Area (Sq.Ft)
-              </label>
-              <input
-                type="number"
-                name="area_sqft"
-                value={formData.area_sqft}
-                onChange={handleChange}
-                placeholder="e.g. 2400"
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm"
-                required
-              />
-            </div>
+            {!isPlot && (
+              <div>
+                <label className="block text-gray-700 text-sm font-semibold mb-2 flex items-center gap-1">
+                  <Maximize size={16} className="text-orange-500" /> Area
+                  (Sq.Ft)
+                </label>
+                <input
+                  type="number"
+                  name="area_sqft"
+                  value={formData.area_sqft}
+                  onChange={handleChange}
+                  placeholder="e.g. 2400"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm"
+                  required={!isPlot}
+                />
+              </div>
+            )}
           </div>
 
-          {/* Bedrooms & Bathrooms */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-            <div>
-              <label className="block text-gray-700 text-sm font-semibold mb-2 flex items-center gap-1">
-                <Bed size={16} className="text-orange-500" /> Bedrooms (BHK)
-              </label>
-              <select
-                name="bedrooms"
-                value={formData.bedrooms}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm"
-              >
-                <option value="1">1 BHK</option>
-                <option value="2">2 BHK</option>
-                <option value="3">3 BHK</option>
-                <option value="4">4 BHK</option>
-                <option value="5">5+ BHK</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-gray-700 text-sm font-semibold mb-2 flex items-center gap-1">
-                <Bath size={16} className="text-orange-500" /> Bathrooms
-              </label>
-              <select
-                name="bathrooms"
-                value={formData.bathrooms}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm"
-              >
-                <option value="1">1 Bathroom</option>
-                <option value="2">2 Bathrooms</option>
-                <option value="3">3 Bathrooms</option>
-                <option value="4">4 Bathrooms</option>
-                <option value="5">5+ Bathrooms</option>
-              </select>
-            </div>
-          </div>
+          {/* Conditional Fields for Non-Plot Properties */}
+          {!isPlot && (
+            <>
+              {/* Bedrooms & Bathrooms */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+                <div>
+                  <label className="block text-gray-700 text-sm font-semibold mb-2 flex items-center gap-1">
+                    <Bed size={16} className="text-orange-500" /> Bedrooms (BHK)
+                  </label>
+                  <select
+                    className="custom-dropdown"
+                    name="bedrooms"
+                    value={formData.bedrooms}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm"
+                  >
+                    <option value="1">1 BHK</option>
+                    <option value="2">2 BHK</option>
+                    <option value="3">3 BHK</option>
+                    <option value="4">4 BHK</option>
+                    <option value="5">5+ BHK</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-gray-700 text-sm font-semibold mb-2 flex items-center gap-1">
+                    <Bath size={16} className="text-orange-500" /> Bathrooms
+                  </label>
+                  <select
+                    className="custom-dropdown"
+                    name="bathrooms"
+                    value={formData.bathrooms}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm"
+                  >
+                    <option value="1">1 Bathroom</option>
+                    <option value="2">2 Bathrooms</option>
+                    <option value="3">3 Bathrooms</option>
+                    <option value="4">4 Bathrooms</option>
+                    <option value="5">5+ Bathrooms</option>
+                  </select>
+                </div>
+              </div>
 
-          {/* Parking & Furnishing */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-            <div>
-              <label className="block text-gray-700 text-sm font-semibold mb-2 flex items-center gap-1">
-                <Car size={16} className="text-orange-500" /> Parking Available
-              </label>
-              <select
-                name="parking"
-                value={formData.parking}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm"
-              >
-                <option value="Car Parking">Car Parking</option>
-                <option value="Bike Parking">Bike Parking</option>
-                <option value="Car & Bike Parking">Car & Bike Parking</option>
-                <option value="None">None</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-gray-700 text-sm font-semibold mb-2 flex items-center gap-1">
-                <CheckCircle2 size={16} className="text-orange-500" />{" "}
-                Furnishing Status
-              </label>
-              <select
-                name="furnishing"
-                value={formData.furnishing}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm"
-              >
-                <option value="Semi-Furnished">Semi-Furnished</option>
-                <option value="Fully Furnished">Fully Furnished</option>
-                <option value="Unfurnished">Unfurnished</option>
-              </select>
-            </div>
-          </div>
+              {/* Parking & Furnishing */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+                <div>
+                  <label className="block text-gray-700 text-sm font-semibold mb-2 flex items-center gap-1">
+                    <Car size={16} className="text-orange-500" /> Parking
+                    Available
+                  </label>
+                  <select
+                    className="custom-dropdown"
+                    name="parking"
+                    value={formData.parking}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm"
+                  >
+                    <option value="Car Parking">Car Parking</option>
+                    <option value="Bike Parking">Bike Parking</option>
+                    <option value="Car & Bike Parking">
+                      Car & Bike Parking
+                    </option>
+                    <option value="None">None</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-gray-700 text-sm font-semibold mb-2 flex items-center gap-1">
+                    <CheckCircle2 size={16} className="text-orange-500" />{" "}
+                    Furnishing Status
+                  </label>
+                  <select
+                    className="custom-dropdown"
+                    name="furnishing"
+                    value={formData.furnishing}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm"
+                  >
+                    <option value="Semi-Furnished">Semi-Furnished</option>
+                    <option value="Fully Furnished">Fully Furnished</option>
+                    <option value="Unfurnished">Unfurnished</option>
+                  </select>
+                </div>
+              </div>
 
-          {/* Facing Direction */}
-          <div className="mb-5">
-            <label className="block text-gray-700 text-sm font-semibold mb-2 flex items-center gap-1">
-              <Compass size={16} className="text-orange-500" /> Facing Direction
-            </label>
-            <select
-              name="facing"
-              value={formData.facing}
-              onChange={handleChange}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm"
-            >
-              <option value="East">East</option>
-              <option value="North">North</option>
-              <option value="West">West</option>
-              <option value="South">South</option>
-              <option value="North-East">North-East</option>
-            </select>
-          </div>
+              {/* Facing Direction */}
+              <div className="mb-5">
+                <label className="block text-gray-700 text-sm font-semibold mb-2 flex items-center gap-1">
+                  <Compass size={16} className="text-orange-500" /> Facing
+                  Direction
+                </label>
+                <select
+                  className="custom-dropdown"
+                  name="facing"
+                  value={formData.facing}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm"
+                >
+                  <option value="East">East</option>
+                  <option value="North">North</option>
+                  <option value="West">West</option>
+                  <option value="South">South</option>
+                  <option value="North-East">North-East</option>
+                </select>
+              </div>
+            </>
+          )}
 
           {/* Image Upload */}
           <div className="mb-6">

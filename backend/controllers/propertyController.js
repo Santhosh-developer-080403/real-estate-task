@@ -178,69 +178,65 @@ const createProperty = async (req, res) => {
 // Update Property
 const updateProperty = async (req, res) => {
   try {
-    const { id } = req.params;
+    const propertyId = req.params.id;
     const userId = req.user.id;
-    const {
-      title,
-      description,
-      city,
-      property_type,
-      price,
-      bedrooms,
-      bathrooms,
-      parking,
-      furnishing,
-      facing,
-      area_sqft,
-      images,
-    } = req.body;
 
+    // 1. First intha property antha user-oda thaan irukku nu check panrom (Security)
     const propertyCheck = await pool.query(
       "SELECT * FROM properties WHERE id = $1",
-      [id],
+      [propertyId]
     );
-    if (propertyCheck.rows.length === 0)
+    if (propertyCheck.rows.length === 0) {
       return res.status(404).json({ error: "Property not found." });
-    if (propertyCheck.rows[0].user_id !== userId)
-      return res.status(403).json({ error: "Unauthorized." });
-
-    let finalImages = images;
-    if (req.files && Array.isArray(req.files) && req.files.length > 0) {
-      finalImages = JSON.stringify(
-        req.files.map((file) => `/uploads/${file.filename}`),
-      );
-    } else if (Array.isArray(images)) {
-      finalImages = JSON.stringify(images);
+    }
+    if (propertyCheck.rows[0].user_id !== userId) {
+      return res.status(403).json({ error: "Unauthorized to update this property." });
     }
 
-    const updatedProperty = await pool.query(
-      `UPDATE properties SET title = $1, description = $2, city = $3, property_type = $4, price = $5, bedrooms = $6, bathrooms = $7, parking = $8, furnishing = $9, facing = $10, area_sqft = $11, images = $12 WHERE id = $13 RETURNING *`,
-      [
-        title,
-        description,
-        city,
-        property_type,
-        price,
-        bedrooms,
-        bathrooms,
-        parking,
-        furnishing,
-        facing,
-        area_sqft,
-        finalImages,
-        id,
-      ],
-    );
+    const { 
+      title, description, city, property_type, 
+      price, bedrooms, bathrooms, parking, 
+      furnishing, facing, area_sqft 
+    } = req.body;
 
-    res.json({
-      message: "Property updated successfully!",
-      property: updatedProperty.rows[0],
+    // 2. PostgreSQL $1, $2 placeholder syntax-oda query ezhuthrom (Images touch aagathu, so old images safe-a irukkum)
+    const query = `
+      UPDATE properties 
+      SET title = $1, description = $2, city = $3, property_type = $4, 
+          price = $5, bedrooms = $6, bathrooms = $7, parking = $8, 
+          furnishing = $9, facing = $10, area_sqft = $11 
+      WHERE id = $12
+      RETURNING *;
+    `;
+
+    const values = [
+      title, 
+      description, 
+      city, 
+      property_type, 
+      Number(price), 
+      Number(bedrooms), 
+      Number(bathrooms), 
+      parking, 
+      furnishing, 
+      facing, 
+      Number(area_sqft), 
+      propertyId
+    ];
+
+    const updatedProperty = await pool.query(query, values);
+
+    res.status(200).json({
+      success: true,
+      message: "Property updated successfully",
+      property: updatedProperty.rows[0] // PostgreSQL response structure-ku ithu thaan correct
     });
+
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("Error updating property:", err);
+    res.status(500).json({ error: "Failed to update property" });
   }
 };
-
 // Delete Property
 const deleteProperty = async (req, res) => {
   try {

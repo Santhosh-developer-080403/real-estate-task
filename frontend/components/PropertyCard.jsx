@@ -27,6 +27,14 @@ export default function PropertyCard({ property }) {
     }
   }
 
+  // Indian Currency Formatter Helper Function
+  const formatIndianCurrency = (amount) => {
+    if (!amount) return "0";
+    return new Intl.NumberFormat("en-IN", {
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
   return (
     <div className="bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 p-3 flex flex-col justify-between">
       <div>
@@ -49,10 +57,10 @@ export default function PropertyCard({ property }) {
             {property.property_type || "FEATURED"}
           </span>
 
-          {/* Bottom-Left: Price Tag Overlay */}
+          {/* Bottom-Left: Price Tag Overlay with Indian Formatting */}
           <div className="absolute bottom-3 left-3 bg-orange-600/90 backdrop-blur-md text-white text-sm px-3 py-1.5 rounded-xl font-extrabold shadow-md flex items-center">
             <IndianRupee size={14} />
-            {property.price ? property.price.toLocaleString("en-IN") : 0}
+            {formatIndianCurrency(property.price)}
           </div>
         </div>
 

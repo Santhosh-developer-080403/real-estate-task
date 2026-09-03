@@ -67,9 +67,7 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50 pb-16">
       {/* Hero Banner with Background Image & Orange Gradient Overlay */}
       <div className="relative banner-bg text-white py-24 px-6 mb-20 overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center mix-blend-overlay opacity-40 z-0"
-        ></div>
+        <div className="absolute inset-0 bg-cover bg-center mix-blend-overlay opacity-40 z-0"></div>
 
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="max-w-7xl mb-12">
@@ -102,6 +100,7 @@ export default function Home() {
             <div className="flex items-center px-4 py-3 w-full lg:w-1/5 border-b lg:border-b-0 lg:border-r border-gray-200 relative">
               <HomeIcon size={18} className="text-orange-500 mr-2.5 shrink-0" />
               <select
+                className="custom-dropdown"
                 value={propertyType ? `${propertyType}_${bedrooms}` : ""}
                 onChange={(e) => {
                   const val = e.target.value;
@@ -148,6 +147,7 @@ export default function Home() {
                 className="text-orange-500 mr-2.5 shrink-0"
               />
               <select
+                className="custom-dropdown"
                 value={budgetRange}
                 onChange={(e) => {
                   setBudgetRange(e.target.value);
@@ -174,7 +174,7 @@ export default function Home() {
                 size={16}
                 className="text-orange-500 mr-2.5 shrink-0"
               />
-              <select
+              <select className="custom-dropdown"
                 value={sort}
                 onChange={(e) => {
                   setSort(e.target.value);
