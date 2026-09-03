@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Home } from "lucide-react";
 import axios from "axios";
+import { API_URL } from "@/services/api";
+
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");

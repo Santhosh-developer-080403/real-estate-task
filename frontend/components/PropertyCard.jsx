@@ -24,7 +24,6 @@ export default function PropertyCard({ property }) {
     }
     if (Array.isArray(imgs) && imgs.length > 0 && imgs[0]) {
       const imgPath = imgs[0];
-      // imageUrl = `http://localhost:5000${imgPath.startsWith("/") ? "" : "/"}${imgPath}`;
       imageUrl = `${API_URL}${imgPath.startsWith("/") ? "" : "/"}${imgPath}`;
     }
   }
@@ -38,15 +37,15 @@ export default function PropertyCard({ property }) {
   };
 
   return (
-    <div className="bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 p-3 flex flex-col justify-between">
+    <div className="bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 p-3 flex flex-col justify-between group">
       <div>
-        {/* Image Container */}
+        {/* Image Container with Hover Zoom Animation */}
         <div className="h-52 rounded-2xl bg-gray-100 relative overflow-hidden">
           {imageUrl && !imageUrl.includes("placeholder") ? (
             <img
               src={imageUrl}
               alt={property.title || "Property Image"}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
             />
           ) : (
             <div className="flex items-center justify-center h-full text-gray-400">
@@ -55,12 +54,12 @@ export default function PropertyCard({ property }) {
           )}
 
           {/* Top-Left: Property Type Badge */}
-          <span className="absolute top-3 left-3 bg-orange-600 text-white text-xs px-3 py-1 rounded-full font-bold shadow-md">
+          <span className="absolute top-3 left-3 bg-orange-600 text-white text-xs px-3 py-1 rounded-full font-bold shadow-md z-10">
             {property.property_type || "FEATURED"}
           </span>
 
           {/* Bottom-Left: Price Tag Overlay with Indian Formatting */}
-          <div className="absolute bottom-3 left-3 bg-orange-600/90 backdrop-blur-md text-white text-sm px-3 py-1.5 rounded-xl font-extrabold shadow-md flex items-center">
+          <div className="absolute bottom-3 left-3 bg-orange-600/90 backdrop-blur-md text-white text-sm px-3 py-1.5 rounded-xl font-extrabold shadow-md flex items-center z-10">
             <IndianRupee size={14} />
             {formatIndianCurrency(property.price)}
           </div>

@@ -4,6 +4,8 @@ import API, { API_URL } from "@/services/api";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { UserPlus, User, Mail, Lock } from "lucide-react";
+import axios from "axios";
+
 
 export default function RegisterPage() {
   const [name, setName] = useState("");

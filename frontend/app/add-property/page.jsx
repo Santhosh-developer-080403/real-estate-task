@@ -78,7 +78,7 @@ export default function AddPropertyPage() {
       data.append("property_type", formData.property_type);
       data.append("price", Number(formData.price));
 
-      // Plot-ah iruntha extra fields anuppa thevai illa
+      // Plot-ah iruntha extra fields thevaiilla
       if (formData.property_type !== "Plot") {
         data.append("bedrooms", Number(formData.bedrooms));
         data.append("bathrooms", Number(formData.bathrooms));
@@ -100,7 +100,13 @@ export default function AddPropertyPage() {
 
       router.push("/");
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to create property");
+      console.error("Property creation error:", err.response || err);
+      setError(
+        err.response?.data?.message ||
+          err.response?.data?.error ||
+          "Failed to create property. Please check all fields.",
+      );
+    } finally {
       setLoading(false);
     }
   };
@@ -109,7 +115,7 @@ export default function AddPropertyPage() {
 
   return (
     <div>
-      <div className="relative add-property-bg text-white py-24 px-6 mb-20 overflow-hidden">
+      <div className="relative add-property-bg text-white py-24 px-6 mb-20 overflow-hidden bg-orange-600">
         <div className="absolute inset-0 bg-cover bg-center mix-blend-overlay opacity-40 z-0"></div>
 
         <div className="max-w-7xl mx-auto relative z-10">
@@ -188,11 +194,10 @@ export default function AddPropertyPage() {
                 <Building size={16} className="text-orange-500" /> Property Type
               </label>
               <select
-                className="custom-dropdown"
                 name="property_type"
                 value={formData.property_type}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm custom-dropdown"
               >
                 <option value="Apartment">Apartment</option>
                 <option value="Villa">Villa</option>
@@ -247,11 +252,10 @@ export default function AddPropertyPage() {
                     <Bed size={16} className="text-orange-500" /> Bedrooms (BHK)
                   </label>
                   <select
-                    className="custom-dropdown"
                     name="bedrooms"
                     value={formData.bedrooms}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm custom-dropdown"
                   >
                     <option value="1">1 BHK</option>
                     <option value="2">2 BHK</option>
@@ -265,11 +269,10 @@ export default function AddPropertyPage() {
                     <Bath size={16} className="text-orange-500" /> Bathrooms
                   </label>
                   <select
-                    className="custom-dropdown"
                     name="bathrooms"
                     value={formData.bathrooms}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm custom-dropdown"
                   >
                     <option value="1">1 Bathroom</option>
                     <option value="2">2 Bathrooms</option>
@@ -288,11 +291,10 @@ export default function AddPropertyPage() {
                     Available
                   </label>
                   <select
-                    className="custom-dropdown"
                     name="parking"
                     value={formData.parking}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm custom-dropdown"
                   >
                     <option value="Car Parking">Car Parking</option>
                     <option value="Bike Parking">Bike Parking</option>
@@ -308,11 +310,10 @@ export default function AddPropertyPage() {
                     Furnishing Status
                   </label>
                   <select
-                    className="custom-dropdown"
                     name="furnishing"
                     value={formData.furnishing}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm custom-dropdown"
                   >
                     <option value="Semi-Furnished">Semi-Furnished</option>
                     <option value="Fully Furnished">Fully Furnished</option>
@@ -328,11 +329,10 @@ export default function AddPropertyPage() {
                   Direction
                 </label>
                 <select
-                  className="custom-dropdown"
                   name="facing"
                   value={formData.facing}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm custom-dropdown"
                 >
                   <option value="East">East</option>
                   <option value="North">North</option>
@@ -366,7 +366,7 @@ export default function AddPropertyPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-orange-500/30 transition duration-200 uppercase tracking-wider text-sm disabled:opacity-50"
+            className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-orange-500/30 transition duration-200 uppercase tracking-wider text-sm disabled:opacity-50 cursor-pointer"
           >
             {loading ? "Posting Property..." : "Post Property"}
           </button>
