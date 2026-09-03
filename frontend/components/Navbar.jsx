@@ -64,12 +64,9 @@ export default function Navbar() {
 
   return (
     <nav className="bg-white shadow-sm px-6 py-4 flex justify-between items-center border-b border-gray-100 sticky top-0 z-50">
-      <Link
-        href="/"
-        className="text-xl font-bold text-orange-500 flex items-center gap-2"
-      >
+      <Link href="/" className="...">
         <Image
-          src={headerImg}
+          src="/logos/main-logo.png" // இங்க பாரு da, சிம்பிளா இப்படி கொடுக்கணும்!
           alt="Citi Estate Logo"
           width={100}
           height={40}
