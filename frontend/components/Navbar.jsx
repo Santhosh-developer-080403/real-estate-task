@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Menu, X, ChevronDown } from "lucide-react";
+import headerImg from "../public/logos/main-logo.png";
+
 
 export default function Navbar() {
   const [token, setToken] = useState(null);
@@ -55,8 +57,8 @@ export default function Navbar() {
         className="text-xl font-bold text-orange-500 flex items-center gap-2"
       >
         <Image
-          src="/logos/main-logo.png"
-          alt="Citi Estate"
+          src={headerImg}
+          alt="Citi Estate Logo"
           width={100}
           height={40}
           priority

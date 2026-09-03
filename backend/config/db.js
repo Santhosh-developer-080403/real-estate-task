@@ -19,6 +19,69 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
+// const initializeDatabase = async () => {
+//   try {
+//     await pool.query(`
+//       CREATE TABLE IF NOT EXISTS users (
+//         id SERIAL PRIMARY KEY,
+//         name VARCHAR(255) NOT NULL,
+//         email VARCHAR(255) UNIQUE NOT NULL,
+//         password TEXT NOT NULL,
+//         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+//       );
+
+//       CREATE TABLE IF NOT EXISTS properties (
+//         id SERIAL PRIMARY KEY,
+//         title VARCHAR(255) NOT NULL,
+//         description TEXT,
+//         city VARCHAR(100) NOT NULL,
+//         property_type VARCHAR(100) NOT NULL,
+//         price NUMERIC NOT NULL,
+//         bedrooms INTEGER DEFAULT 0,
+//         bathrooms INTEGER DEFAULT 0,
+//         parking INTEGER DEFAULT 0,
+//         furnishing VARCHAR(100),
+//         facing VARCHAR(50),
+//         area_sqft NUMERIC,
+//         images TEXT,
+//         user_id INTEGER NOT NULL,
+//         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+//         CONSTRAINT fk_properties_user
+//         FOREIGN KEY (user_id)
+//         REFERENCES users(id)
+//         ON DELETE CASCADE
+//       );
+
+//       CREATE TABLE IF NOT EXISTS inquiries (
+//         id SERIAL PRIMARY KEY,
+//         property_id INTEGER NOT NULL,
+//         user_id INTEGER,
+//         name VARCHAR(255) NOT NULL,
+//         email VARCHAR(255) NOT NULL,
+//         phone VARCHAR(50) NOT NULL,
+//         location VARCHAR(255),
+//         message TEXT NOT NULL,
+//         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+//         CONSTRAINT fk_inquiries_property
+//         FOREIGN KEY (property_id)
+//         REFERENCES properties(id)
+//         ON DELETE CASCADE,
+
+//         CONSTRAINT fk_inquiries_user
+//         FOREIGN KEY (user_id)
+//         REFERENCES users(id)
+//         ON DELETE SET NULL
+//       );
+//     `);
+
+//     console.log("Database tables initialized successfully!");
+//   } catch (err) {
+//     console.error("Database initialization error:", err);
+//   }
+// };
+
 const initializeDatabase = async () => {
   try {
     await pool.query(`
@@ -39,7 +102,7 @@ const initializeDatabase = async () => {
         price NUMERIC NOT NULL,
         bedrooms INTEGER DEFAULT 0,
         bathrooms INTEGER DEFAULT 0,
-        parking INTEGER DEFAULT 0,
+        parking VARCHAR(255),
         furnishing VARCHAR(100),
         facing VARCHAR(50),
         area_sqft NUMERIC,
@@ -76,12 +139,18 @@ const initializeDatabase = async () => {
       );
     `);
 
+    // IMPORTANT: update existing Render DB column
+    await pool.query(`
+      ALTER TABLE properties
+      ALTER COLUMN parking TYPE VARCHAR(255)
+      USING parking::VARCHAR;
+    `);
+
     console.log("Database tables initialized successfully!");
   } catch (err) {
     console.error("Database initialization error:", err);
   }
 };
-
 pool
   .connect()
   .then(async (client) => {
