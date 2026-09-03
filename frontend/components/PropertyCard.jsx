@@ -1,4 +1,5 @@
 import Link from "next/link";
+import API, { API_URL } from "@/services/api";
 import {
   Home,
   MapPin,
@@ -23,7 +24,8 @@ export default function PropertyCard({ property }) {
     }
     if (Array.isArray(imgs) && imgs.length > 0 && imgs[0]) {
       const imgPath = imgs[0];
-      imageUrl = `http://localhost:5000${imgPath.startsWith("/") ? "" : "/"}${imgPath}`;
+      // imageUrl = `http://localhost:5000${imgPath.startsWith("/") ? "" : "/"}${imgPath}`;
+      imageUrl = `${API_URL}${imgPath.startsWith("/") ? "" : "/"}${imgPath}`;
     }
   }
 

@@ -19,6 +19,8 @@ export default function Footer() {
               src={footerImg.src}
               alt="Citi Estate Logo"
               className="h-10 w-auto object-contain mx-auto"
+              width={500}
+              height={100}
             />
           </Link>
         </div>
@@ -30,7 +32,7 @@ export default function Footer() {
         </p>
 
         {/* Contact Details (Underline layout style) */}
-        <div className="w-full  py-6 my-2 max-w-4xl flex flex-col md:flex-row items-center justify-around gap-6 text-sm">
+        <div className="w-full py-3 max-w-4xl flex flex-col md:flex-row items-center justify-around gap-6 text-sm">
           {/* Phone */}
           <a
             href="tel:+919876543210"

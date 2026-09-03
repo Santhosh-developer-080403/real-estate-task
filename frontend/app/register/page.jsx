@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import API from "@/services/api";
+import API, { API_URL } from "@/services/api";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { UserPlus, User, Mail, Lock } from "lucide-react";
@@ -13,39 +13,39 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-const handleRegister = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setError("");
-  try {
-    const res = await axios.post("http://localhost:5000/api/auth/register", {
-      name,
-      email,
-      password,
-    });
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    try {
+      const res = await axios.post(`${API_URL}/api/auth/register`, {
+        name,
+        email,
+        password,
+      });
 
-    localStorage.setItem("token", res.data.token);
+      localStorage.setItem("token", res.data.token);
 
-    // Safe-a check panni name save panrathu (Backend response key enna irunthalum andha error varathu)
-    const userName =
-      res.data.user?.name || res.data.name || res.data.username || name;
-    localStorage.setItem("userName", userName);
+      // Safe-a check panni name save panrathu (Backend response key enna irunthalum andha error varathu)
+      const userName =
+        res.data.user?.name || res.data.name || res.data.username || name;
+      localStorage.setItem("userName", userName);
 
-    // Bug fixed here (removed the invalid new_Event typo)
-    window.dispatchEvent(new Event("auth-change"));
+      // Bug fixed here (removed the invalid new_Event typo)
+      window.dispatchEvent(new Event("auth-change"));
 
-    router.push("/");
-  } catch (err) {
-    console.error("Register error:", err);
-    setError(
-      err.response?.data?.message ||
-        err.response?.data?.error ||
-        "Registration failed. Please try again.",
-    );
-  } finally {
-    setLoading(false);
-  }
-};
+      router.push("/");
+    } catch (err) {
+      console.error("Register error:", err);
+      setError(
+        err.response?.data?.message ||
+          err.response?.data?.error ||
+          "Registration failed. Please try again.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="relative min-h-[85vh] w-full flex items-center justify-center overflow-hidden bg-gray-50 px-4 py-8">
@@ -58,7 +58,6 @@ const handleRegister = async (e) => {
           autoComplete="off"
           className="bg-orange-500 p-8 md:p-10 rounded-3xl shadow-2xl shadow-orange-500/20 border border-orange-400 text-white"
         >
-
           <h2 className="text-2xl md:text-3xl font-extrabold mb-2 text-center text-white leading-tight">
             Create Account
           </h2>

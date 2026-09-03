@@ -220,7 +220,8 @@ export default function DashboardPage() {
                 const imgs = getImagesArray(property.images);
                 const firstImg =
                   imgs.length > 0
-                    ? `http://localhost:5000${imgs[0]}`
+                    ? // ? `http://localhost:5000${imgs[0]}`
+                      `${API_URL}${imgs[0]}`
                     : "/placeholder.jpg";
 
                 return (
@@ -343,7 +344,8 @@ export default function DashboardPage() {
               {getImagesArray(selectedProperty.images).map((img, idx) => (
                 <img
                   key={idx}
-                  src={`http://localhost:5000${img}`}
+                  // src={`http://localhost:5000${img}`}
+                  src={`${API_URL}${img}`}
                   alt="Property"
                   className="w-full h-40 object-cover rounded-xl"
                 />

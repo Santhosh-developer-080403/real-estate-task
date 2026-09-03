@@ -12,7 +12,10 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:5000",
+        // url: "5000",
+        // url: "http://localhost:5000",
+        url: `http://localhost:${process.env.API_URL}`,
+        // process.env.API_URL
       },
     ],
     components: {
