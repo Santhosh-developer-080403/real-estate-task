@@ -78,12 +78,12 @@ export default function Navbar() {
             >
               Add Property
             </Link>
-            <Link
+            {/* <Link
               href="/dashboard"
               className="text-gray-700 hover:text-orange-500 transition flex items-center gap-1.5"
             >
               Dashboard
-            </Link>
+            </Link> */}
           </>
         )}
 

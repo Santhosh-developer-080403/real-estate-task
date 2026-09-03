@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import API from "@/services/api";
+import { API_URL } from "@/services/api";
 import Link from "next/link";
 import {
   MessageSquare,
