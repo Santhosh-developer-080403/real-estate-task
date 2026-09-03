@@ -86,14 +86,22 @@ const getProperties = async (req, res) => {
 const getPropertyById = async (req, res) => {
   try {
     const { id } = req.params;
-    const property = await pool.query(
-      "SELECT * FROM properties WHERE id = $1",
-      [id],
-    );
-    if (property.rows.length === 0) {
-      return res.status(404).json({ error: "Property not found." });
+    
+    // users table-oda join panni name-ah 'owner_name' (illa 'username') nu edukurom
+    const query = `
+      SELECT properties.*, users.name AS owner_name, users.email AS owner_email, users.phone AS owner_phone
+      FROM properties
+      LEFT JOIN users ON properties.user_id = users.id
+      WHERE properties.id = $1
+    `;
+    
+    const result = await pool.query(query, [id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Property not found" });
     }
-    res.json(property.rows[0]);
+
+    res.json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -162,7 +170,7 @@ const createProperty = async (req, res) => {
       imagesString,
       req.user.id,
     ];
-    
+
     const newProperty = await pool.query(query, values);
 
     res.status(201).json({
@@ -193,10 +201,10 @@ const updateProperty = async (req, res) => {
       return res.status(403).json({ error: "Unauthorized to update this property." });
     }
 
-    const { 
-      title, description, city, property_type, 
-      price, bedrooms, bathrooms, parking, 
-      furnishing, facing, area_sqft 
+    const {
+      title, description, city, property_type,
+      price, bedrooms, bathrooms, parking,
+      furnishing, facing, area_sqft
     } = req.body;
 
     // 2. PostgreSQL $1, $2 placeholder syntax-oda query ezhuthrom (Images touch aagathu, so old images safe-a irukkum)
@@ -210,17 +218,17 @@ const updateProperty = async (req, res) => {
     `;
 
     const values = [
-      title, 
-      description, 
-      city, 
-      property_type, 
-      Number(price), 
-      Number(bedrooms), 
-      Number(bathrooms), 
-      parking, 
-      furnishing, 
-      facing, 
-      Number(area_sqft), 
+      title,
+      description,
+      city,
+      property_type,
+      Number(price),
+      Number(bedrooms),
+      Number(bathrooms),
+      parking,
+      furnishing,
+      facing,
+      Number(area_sqft),
       propertyId
     ];
 

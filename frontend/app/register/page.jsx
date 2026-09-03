@@ -1,11 +1,10 @@
 "use client";
-import { useState } from "react";
-import API, { API_URL } from "@/services/api";
+import { useState, useEffect } from "react";
+import { API_URL } from "@/services/api";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { UserPlus, User, Mail, Lock } from "lucide-react";
+import { User, Mail, Lock } from "lucide-react";
 import axios from "axios";
-
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
@@ -14,6 +13,14 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  // Already logged-in users-ah redirect panna
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      router.push("/");
+    }
+  }, [router]);
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -26,16 +33,18 @@ export default function RegisterPage() {
         password,
       });
 
-      localStorage.setItem("token", res.data.token);
+      // Note: Backend register response-la token varala na (ila login endpoint mattum tharum na),
+      // signup pannathum auto-login antha response-ku etha maathiri maathikalam.
+      // Oru vela register-la token varunnu unga controller thanthiruntha, ithu work aagum:
+      if (res.data.token) {
+        localStorage.setItem("token", res.data.token);
+      }
 
-      // Safe-a check panni name save panrathu (Backend response key enna irunthalum andha error varathu)
       const userName =
         res.data.user?.name || res.data.name || res.data.username || name;
       localStorage.setItem("userName", userName);
 
-      // Bug fixed here (removed the invalid new_Event typo)
       window.dispatchEvent(new Event("auth-change"));
-
       router.push("/");
     } catch (err) {
       console.error("Register error:", err);
@@ -51,7 +60,6 @@ export default function RegisterPage() {
 
   return (
     <div className="relative min-h-[85vh] w-full flex items-center justify-center overflow-hidden bg-gray-50 px-4 py-8">
-      {/* Background Subtle Gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-orange-50/50 via-white to-orange-50/30 z-0"></div>
 
       <div className="relative z-10 w-full max-w-md">

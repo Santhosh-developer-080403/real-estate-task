@@ -80,6 +80,14 @@ body {
   background-position: center;
 }
 
+
+.our-dashboard-bg {
+  background-image: url(../public/images/dashboard.webp);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
 body {
   font-family: var(--font-montserrat);
 }

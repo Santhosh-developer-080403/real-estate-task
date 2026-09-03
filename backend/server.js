@@ -24,7 +24,8 @@ app.get("/", (req, res) => {
   res.json({ message: "Real Estate Backend API is running successfully!" });
 });
 
-const PORT = process.env.API_URL;
+// Port configuration-ah mattum sari pannirukku (API_URL-ku pathila PORT use pannalam)
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

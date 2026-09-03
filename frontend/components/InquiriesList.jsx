@@ -52,7 +52,7 @@ export default function InquiriesList({ inquiries, loading, onInquiryView }) {
               onClick={() => onInquiryView(inquiry)}
               className="bg-orange-500 hover:bg-orange-600 text-white px-5 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition shadow-md shrink-0"
             >
-              <Eye size={16} /> View Details
+               View Details
             </button>
           </div>
         </div>

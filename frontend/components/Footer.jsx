@@ -58,7 +58,7 @@ export default function Footer() {
               className="text-orange-500 shrink-0 self-start mt-0.5"
             />
             <span>
-              No. 12, Anna Nagar Main Road, Chennai, Tamil Nadu 600040
+               Chennai, Tamil Nadu 600040
             </span>
           </div>
         </div>

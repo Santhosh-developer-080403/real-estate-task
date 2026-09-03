@@ -2,21 +2,19 @@
 import { useState, useEffect, Suspense } from "react";
 import API, { API_URL } from "@/services/api";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import {
-  Building2,
-  MessageSquare,
-  User,
-  X,
-  Edit3,
-  Mail,
-  Phone,
+  ArrowLeft,
 } from "lucide-react";
 
 import MyProperties from "@/components/MyProperties";
 import InquiriesList from "@/components/InquiriesList";
 import EditProfile from "@/components/EditProfile";
+import DashboardTabs from "@/components/DashboardTabs";
+import ViewPropertyModal from "@/components/ViewPropertyModal";
+import InquiryModal from "@/components/InquiryModal";
+import EditPropertyModal from "@/components/EditPropertyModal";
 
-// 1. Ella main logic-um intha component kulla irukum
 function DashboardContent() {
   const [activeTab, setActiveTab] = useState("properties");
   const [myProperties, setMyProperties] = useState([]);
@@ -136,12 +134,8 @@ function DashboardContent() {
       city: property.city || "",
       property_type: property.property_type || "Apartment",
       price: property.price || "",
-      bedrooms: property.bedrooms || "1",
-      bathrooms: property.bathrooms || "1",
-      parking: property.parking || "Car Parking",
-      furnishing: property.furnishing || "Semi-Furnished",
-      facing: property.facing || "East",
-      area_sqft: property.area_sqft || "",
+      existingImages: getImagesArray(property.images), // ஏற்கனவே இருக்கிற இமேஜ்கள்
+      newImages: [], // புதுசா அப்லோடு பண்றதுக்கு
     });
     setEditModal(true);
   };
@@ -175,26 +169,42 @@ function DashboardContent() {
     e.preventDefault();
     setUpdating(true);
     try {
-      const existingImages = selectedProperty.images;
+      const formData = new FormData();
+      formData.append("title", editForm.title);
+      formData.append("description", editForm.description);
+      formData.append("city", editForm.city);
+      formData.append("property_type", editForm.property_type);
+      formData.append("price", editForm.price);
+
+      formData.append("existingImages", JSON.stringify(editForm.existingImages));
+
+      if (editForm.newImages && editForm.newImages.length > 0) {
+        for (let i = 0; i < editForm.newImages.length; i++) {
+          formData.append("images", editForm.newImages[i]);
+        }
+      }
+
       const res = await API.put(
         `/api/properties/${selectedProperty.id}`,
-        editForm,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        },
       );
+
       const responseData = res.data.property || res.data;
 
       const updatedData = {
         ...selectedProperty,
         ...responseData,
         images:
-          responseData.images !== undefined && responseData.images !== null
+          responseData.images !== undefined
             ? responseData.images
-            : existingImages,
+            : editForm.existingImages,
       };
 
       setMyProperties(
-        myProperties.map((p) =>
-          p.id === selectedProperty.id ? updatedData : p,
-        ),
+        myProperties.map((p) => (p.id === selectedProperty.id ? updatedData : p)),
       );
       setEditModal(false);
       alert("Property updated successfully!");
@@ -205,7 +215,6 @@ function DashboardContent() {
       setUpdating(false);
     }
   };
-
   const getImagesArray = (propertyImages) => {
     if (!propertyImages) return [];
     if (Array.isArray(propertyImages)) return propertyImages;
@@ -226,322 +235,99 @@ function DashboardContent() {
   }, [tabParam]);
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10 min-h-screen text-gray-800 relative">
-      <h1 className="text-3xl font-extrabold text-gray-900 mb-6">
-        User <span className="text-orange-500">Dashboard</span>
-      </h1>
 
-      {/* Tabs Header */}
-      <div className="flex border-b border-gray-200 mb-8 gap-8 overflow-x-auto">
-        <button
-          onClick={() => setActiveTab("properties")}
-          className={`pb-3 font-bold text-base transition flex items-center gap-2 border-b-2 shrink-0 ${
-            activeTab === "properties"
-              ? "border-orange-500 text-orange-600"
-              : "border-transparent text-gray-500 hover:text-gray-700"
-          }`}
-        >
-          <Building2 size={20} /> My Properties ({myProperties.length})
-        </button>
-        <button
-          onClick={() => setActiveTab("inquiries")}
-          className={`pb-3 font-bold text-base transition flex items-center gap-2 border-b-2 shrink-0 ${
-            activeTab === "inquiries"
-              ? "border-orange-500 text-orange-600"
-              : "border-transparent text-gray-500 hover:text-gray-700"
-          }`}
-        >
-          <MessageSquare size={20} /> Received Inquiries ({inquiries.length})
-        </button>
-        <button
-          onClick={() => setActiveTab("profile")}
-          className={`pb-3 font-bold text-base transition flex items-center gap-2 border-b-2 shrink-0 ${
-            activeTab === "profile"
-              ? "border-orange-500 text-orange-600"
-              : "border-transparent text-gray-500 hover:text-gray-700"
-          }`}
-        >
-          <User size={20} /> Edit Profile
-        </button>
+    <div>
+      <div className="relative our-dashboard-bg  text-white py-24 px-6 overflow-hidden bg-orange-600">
+        <div className="absolute inset-0 bg-cover bg-center mix-blend-overlay opacity-40 z-0"></div>
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="max-w-2xl mb-12">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 text-white font-medium mb-3 hover:underline text-sm bg-black/20 px-3 py-1.5 rounded-lg w-fit backdrop-blur-sm transition"
+            >
+              <ArrowLeft size={16} /> Back to Home
+            </Link>
+            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-4">
+              Our Dashboard
+            </h1>
+          </div>
+        </div>
       </div>
+      <div className="max-w-6xl mx-auto px-6 py-10 min-h-screen text-gray-800 relative">
 
-      {/* Tab Content Render */}
-      {activeTab === "properties" && (
-        <MyProperties
-          properties={myProperties}
-          loading={propLoading}
-          onView={handleView}
-          onEdit={handleEditOpen}
-          onDelete={handleDelete}
+
+        <h1 className="text-3xl text-center font-extrabold mb-20 text-gray-900 mb-6">
+          User <span className="text-orange-500">Dashboard</span>
+        </h1>
+
+        {/* Tabs Component */}
+        <DashboardTabs
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          propertiesCount={myProperties.length}
+          inquiriesCount={inquiries.length}
+        />
+
+        {/* Tab Content Render */}
+        {activeTab === "properties" && (
+          <MyProperties
+            properties={myProperties}
+            loading={propLoading}
+            onView={handleView}
+            onEdit={handleEditOpen}
+            onDelete={handleDelete}
+            API_URL={API_URL}
+            getImagesArray={getImagesArray}
+          />
+        )}
+
+        {activeTab === "inquiries" && (
+          <InquiriesList
+            inquiries={inquiries}
+            loading={inqLoading}
+            onInquiryView={handleInquiryView}
+          />
+        )}
+
+        {activeTab === "profile" && (
+          <EditProfile
+            profileForm={profileForm}
+            profileLoading={profileLoading}
+            profileUpdating={profileUpdating}
+            onChange={handleProfileChange}
+            onSubmit={handleProfileSubmit}
+          />
+        )}
+
+        {/* Modals */}
+        <ViewPropertyModal
+          property={selectedProperty}
           API_URL={API_URL}
           getImagesArray={getImagesArray}
+          onClose={() => setViewModal(false)}
+          isOpen={viewModal && selectedProperty}
         />
-      )}
 
-      {activeTab === "inquiries" && (
-        <InquiriesList
-          inquiries={inquiries}
-          loading={inqLoading}
-          onInquiryView={handleInquiryView}
+        <InquiryModal
+          inquiry={selectedInquiry}
+          onClose={() => setInquiryModal(false)}
+          isOpen={inquiryModal && selectedInquiry}
         />
-      )}
 
-      {activeTab === "profile" && (
-        <EditProfile
-          profileForm={profileForm}
-          profileLoading={profileLoading}
-          profileUpdating={profileUpdating}
-          onChange={handleProfileChange}
-          onSubmit={handleProfileSubmit}
+        <EditPropertyModal
+          editForm={editForm}
+          updating={updating}
+          onChange={handleEditChange}
+          onSubmit={handleEditSubmit}
+          onClose={() => setEditModal(false)}
+          isOpen={editModal && selectedProperty}
         />
-      )}
-
-      {/* MODALS */}
-      {viewModal && selectedProperty && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 relative shadow-xl">
-            <button
-              onClick={() => setViewModal(false)}
-              className="absolute top-4 right-4 bg-gray-100 hover:bg-gray-200 text-gray-600 p-2 rounded-full transition"
-            >
-              <X size={20} />
-            </button>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              {selectedProperty.title}
-            </h2>
-            <div className="grid grid-cols-2 gap-2 mb-4">
-              {getImagesArray(selectedProperty.images).map((img, idx) => (
-                <img
-                  key={idx}
-                  src={`${API_URL}${img}`}
-                  alt="Property"
-                  className="w-full h-40 object-cover rounded-xl"
-                />
-              ))}
-            </div>
-            <div className="space-y-3 text-sm text-gray-700">
-              <p>
-                <strong>Description:</strong> {selectedProperty.description}
-              </p>
-              <p>
-                <strong>City:</strong> {selectedProperty.city}
-              </p>
-              <p>
-                <strong>Type:</strong> {selectedProperty.property_type}
-              </p>
-              <p className="text-orange-600 text-lg font-bold">
-                Price: ₹{" "}
-                {Number(selectedProperty.price).toLocaleString("en-IN")}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {inquiryModal && selectedInquiry && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 relative shadow-2xl border border-gray-100">
-            <button
-              onClick={() => setInquiryModal(false)}
-              className="absolute top-4 right-4 bg-gray-100 hover:bg-gray-200 text-gray-600 p-2 rounded-full transition"
-            >
-              <X size={20} />
-            </button>
-            <h2 className="text-xl font-extrabold text-gray-900 mb-1 flex items-center gap-2">
-              <MessageSquare className="text-orange-500" size={22} /> Inquiry
-              Details
-            </h2>
-            <p className="text-xs text-gray-400 mb-6">
-              Received on{" "}
-              {new Date(selectedInquiry.created_at).toLocaleString()}
-            </p>
-            <div className="space-y-4 text-sm">
-              <div className="bg-orange-50/50 border border-orange-100 rounded-2xl p-4">
-                <span className="text-xs font-bold text-orange-600 uppercase tracking-wider">
-                  Inquired Property
-                </span>
-                <h3 className="font-bold text-base text-gray-900 mt-0.5">
-                  {selectedInquiry.property_title ||
-                    "Property Title Unavailable"}
-                </h3>
-              </div>
-              <div className="bg-gray-50 border border-gray-100 rounded-2xl p-4 space-y-3">
-                <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">
-                  Customer Information
-                </span>
-                <div className="flex items-center gap-3 text-gray-800">
-                  <div className="bg-white p-2 rounded-xl shadow-sm text-orange-500">
-                    <User size={18} />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-400 font-medium">Name</p>
-                    <p className="font-bold text-gray-900">
-                      {selectedInquiry.sender_name ||
-                        selectedInquiry.user_name ||
-                        selectedInquiry.name ||
-                        selectedInquiry.username ||
-                        "N/A"}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 text-gray-800">
-                  <div className="bg-white p-2 rounded-xl shadow-sm text-orange-500">
-                    <Mail size={18} />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-400 font-medium">
-                      Email Address
-                    </p>
-                    <p className="font-bold text-gray-900">
-                      {selectedInquiry.sender_email ||
-                        selectedInquiry.email ||
-                        "N/A"}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 text-gray-800">
-                  <div className="bg-white p-2 rounded-xl shadow-sm text-orange-500">
-                    <Phone size={18} />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-400 font-medium">
-                      Phone Number
-                    </p>
-                    <p className="font-bold text-gray-900">
-                      {selectedInquiry.sender_phone ||
-                        selectedInquiry.phone ||
-                        "N/A"}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-gray-50 border border-gray-100 rounded-2xl p-4">
-                <span className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">
-                  Message
-                </span>
-                <p className="text-gray-700 bg-white p-3 rounded-xl border border-gray-100 mt-1 italic">
-                  "{selectedInquiry.message || "No message provided."}"
-                </p>
-              </div>
-            </div>
-            <div className="mt-6">
-              <button
-                onClick={() => setInquiryModal(false)}
-                className="w-full bg-gray-900 hover:bg-black text-white font-bold py-3 rounded-xl transition shadow-md text-sm"
-              >
-                Close Details
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {editModal && selectedProperty && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 relative shadow-2xl border border-gray-100">
-            <button
-              onClick={() => setEditModal(false)}
-              className="absolute top-4 right-4 bg-gray-100 hover:bg-gray-200 text-gray-600 p-2 rounded-full transition"
-            >
-              <X size={20} />
-            </button>
-            <h2 className="text-xl font-extrabold text-gray-900 mb-6 flex items-center gap-2">
-              <Edit3 className="text-orange-500" size={22} /> Edit Property
-            </h2>
-            <form onSubmit={handleEditSubmit} className="space-y-4 text-sm">
-              <div>
-                <label className="block text-gray-700 font-semibold mb-1">
-                  Property Title
-                </label>
-                <input
-                  type="text"
-                  name="title"
-                  value={editForm.title}
-                  onChange={handleEditChange}
-                  className="w-full px-4 py-2 border rounded-xl text-black bg-gray-50 focus:ring-2 focus:ring-orange-500 text-sm"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700 font-semibold mb-1">
-                  City
-                </label>
-                <input
-                  type="text"
-                  name="city"
-                  value={editForm.city}
-                  onChange={handleEditChange}
-                  className="w-full px-4 py-2 border rounded-xl text-black bg-gray-50 focus:ring-2 focus:ring-orange-500 text-sm"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700 font-semibold mb-1">
-                  Price (₹)
-                </label>
-                <input
-                  type="number"
-                  name="price"
-                  value={editForm.price}
-                  onChange={handleEditChange}
-                  className="w-full px-4 py-2 border rounded-xl text-black bg-gray-50 focus:ring-2 focus:ring-orange-500 text-sm"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700 font-semibold mb-1">
-                  Property Type
-                </label>
-                <select
-                  name="property_type"
-                  value={editForm.property_type}
-                  onChange={handleEditChange}
-                  className="w-full px-4 py-2 border rounded-xl text-black bg-gray-50 focus:ring-2 focus:ring-orange-500 text-sm"
-                >
-                  <option value="Apartment">Apartment</option>
-                  <option value="House">House</option>
-                  <option value="Villa">Villa</option>
-                  <option value="Plot">Plot</option>
-                  <option value="Commercial">Commercial</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-gray-700 font-semibold mb-1">
-                  Description
-                </label>
-                <textarea
-                  name="description"
-                  value={editForm.description}
-                  onChange={handleEditChange}
-                  rows="3"
-                  className="w-full px-4 py-2 border rounded-xl text-black bg-gray-50 focus:ring-2 focus:ring-orange-500 text-sm"
-                />
-              </div>
-              <div className="pt-2 flex gap-3">
-                <button
-                  type="button"
-                  onClick={() => setEditModal(false)}
-                  className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 rounded-xl transition text-sm"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={updating}
-                  className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition shadow-md text-sm disabled:opacity-50"
-                >
-                  {updating ? "Saving..." : "Save Changes"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      </div>
     </div>
+
   );
 }
 
-// 2. Next.js App Router-ku thevaiyana Suspense wrapper export
 export default function DashboardPage() {
   return (
     <Suspense

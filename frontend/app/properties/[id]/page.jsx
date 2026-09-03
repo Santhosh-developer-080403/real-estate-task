@@ -69,7 +69,7 @@ export default function PropertyDetailsPage() {
               (item) =>
                 item.city?.toLowerCase() === currentCity.toLowerCase() &&
                 item.property_type?.toLowerCase() ===
-                currentType?.toLowerCase() &&
+                  currentType?.toLowerCase() &&
                 item.id !== Number(id),
             );
             setRelatedProperties(filtered);
@@ -164,7 +164,7 @@ export default function PropertyDetailsPage() {
         img.startsWith("http")
           ? img
           : // : `http://localhost:5000${img.startsWith("/") ? "" : "/"}${img}`,
-          `${API_URL}${img.startsWith("/") ? "" : "/"}${img}`,
+            `${API_URL}${img.startsWith("/") ? "" : "/"}${img}`,
       );
     }
   }
@@ -173,17 +173,8 @@ export default function PropertyDetailsPage() {
 
   const bannerImage = images.length > 0 ? images[activeImage] : "";
 
-const agentDisplayName =
-  property.user?.name ||
-  property.username ||
-  property.owner ||
-  property.agent_name ||
-  property.user_name ||
-  property.owner_name ||
-  property.posted_by ||
-  property.contact_person ||
-  "Property Owner";
-  
+const agentDisplayName = property.owner_name || "Property Owner";
+
   return (
     <div className="min-h-screen bg-gray-50/50 text-gray-800 pb-16">
       {/* Dynamic Banner Matching Reference Design */}
@@ -264,10 +255,11 @@ const agentDisplayName =
                     <div
                       key={idx}
                       onClick={() => setActiveImage(idx)}
-                      className={`h-20 w-28 flex-shrink-0 rounded-xl overflow-hidden cursor-pointer border-2 transition ${activeImage === idx
-                        ? "border-orange-500 shadow-md ring-2 ring-orange-500/20"
-                        : "border-transparent opacity-70 hover:opacity-100"
-                        }`}
+                      className={`h-20 w-28 flex-shrink-0 rounded-xl overflow-hidden cursor-pointer border-2 transition ${
+                        activeImage === idx
+                          ? "border-orange-500 shadow-md ring-2 ring-orange-500/20"
+                          : "border-transparent opacity-70 hover:opacity-100"
+                      }`}
                     >
                       <img
                         src={img}
@@ -422,36 +414,35 @@ const agentDisplayName =
                             ? parsed[0]
                             : // : `http://localhost:5000${parsed[0].startsWith("/") ? "" : "/"}${parsed[0]}`;
                               `${API_URL}${parsed[0].startsWith("/") ? "" : "/"}${parsed[0]}`;
-
                         }
-                      } catch (e) { }
+                      } catch (e) {}
                     }
-                  return (
-                  <Link
-                    key={item.id}
-                    href={`/properties/${item.id}`}
-                    className="flex gap-4 p-3 rounded-xl border border-gray-100 hover:border-orange-200 hover:bg-orange-50/30 transition group block"
-                  >
-                    <div className="w-24 h-20 rounded-lg overflow-hidden bg-gray-100 shrink-0">
-                      <img
-                        src={itemImg}
-                        alt={item.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="flex flex-col justify-between flex-1">
-                      <div>
-                        <span className="text-orange-600 font-extrabold text-base flex items-center">
-                          <IndianRupee size={14} />
-                          {formatIndianCurrency(item.price)}
-                        </span>
-                        <h4 className="text-xs font-semibold text-gray-800 line-clamp-1 mt-0.5">
-                          {item.title}
-                        </h4>
-                      </div>
-                    </div>
-                  </Link>
-                  );
+                    return (
+                      <Link
+                        key={item.id}
+                        href={`/properties/${item.id}`}
+                        className="flex gap-4 p-3 rounded-xl border border-gray-100 hover:border-orange-200 hover:bg-orange-50/30 transition group block"
+                      >
+                        <div className="w-24 h-20 rounded-lg overflow-hidden bg-gray-100 shrink-0">
+                          <img
+                            src={itemImg}
+                            alt={item.title}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="flex flex-col justify-between flex-1">
+                          <div>
+                            <span className="text-orange-600 font-extrabold text-base flex items-center">
+                              <IndianRupee size={14} />
+                              {formatIndianCurrency(item.price)}
+                            </span>
+                            <h4 className="text-xs font-semibold text-gray-800 line-clamp-1 mt-0.5">
+                              {item.title}
+                            </h4>
+                          </div>
+                        </div>
+                      </Link>
+                    );
                   })}
                 </div>
               ) : (

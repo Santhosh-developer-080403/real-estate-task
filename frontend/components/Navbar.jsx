@@ -1,17 +1,17 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Menu, X, ChevronDown } from "lucide-react";
 import headerImg from "../public/logos/main-logo.png";
-
 
 export default function Navbar() {
   const [token, setToken] = useState(null);
   const [userName, setUserName] = useState("User");
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null); // <-- Dropdown element-ஐ track பண்ண ref
   const router = useRouter();
 
   const checkAuth = () => {
@@ -36,6 +36,18 @@ export default function Navbar() {
     return () => {
       window.removeEventListener("storage", checkAuth);
       window.removeEventListener("auth-change", checkAuth);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -73,28 +85,20 @@ export default function Navbar() {
           Home
         </Link>
         {token && (
-          <>
-            <Link
-              href="/add-property"
-              className="text-gray-700 hover:text-orange-500 transition flex items-center gap-1.5"
-            >
-              Add Property
-            </Link>
-            {/* <Link
-              href="/dashboard"
-              className="text-gray-700 hover:text-orange-500 transition flex items-center gap-1.5"
-            >
-              Dashboard
-            </Link> */}
-          </>
+          <Link
+            href="/add-property"
+            className="text-gray-700 hover:text-orange-500 transition flex items-center gap-1.5"
+          >
+            Add Property
+          </Link>
         )}
 
         {token ? (
-          /* Profile Dropdown (Desktop) */
-          <div className="relative">
+          /* Profile Dropdown (Desktop) - Ref சேர்க்கப்பட்டுள்ளது */
+          <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex items-center gap-2 bg-orange-50 hover:bg-orange-100 text-orange-700 px-3 py-2 rounded-2xl transition border border-orange-200"
+              className="flex items-center gap-2 bg-orange-50 hover:bg-orange-100 text-orange-700 px-3 py-2 rounded-2xl transition border border-orange-200 cursor-pointer"
             >
               <div className="w-7 h-7 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold text-xs">
                 {userName ? userName.charAt(0).toUpperCase() : "U"}
@@ -124,15 +128,15 @@ export default function Navbar() {
                   Dashboard
                 </Link>
                 <Link
-                  href="/dashboard?tab=edit-profile"
+                  href="/dashboard?tab=profile"
                   onClick={() => setDropdownOpen(false)}
-                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition"
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:text-orange-600 transition"
                 >
                   Edit Profile
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition text-left"
+                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition text-left cursor-pointer"
                 >
                   Logout
                 </button>
@@ -160,7 +164,7 @@ export default function Navbar() {
       <div className="md:hidden flex items-center">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="text-gray-700 focus:outline-none hover:text-orange-500 transition"
+          className="text-gray-700 focus:outline-none hover:text-orange-500 transition cursor-pointer"
           aria-label="Toggle Menu"
         >
           {isOpen ? <X size={26} /> : <Menu size={26} />}
@@ -212,7 +216,7 @@ export default function Navbar() {
             {token ? (
               <button
                 onClick={handleLogout}
-                className="w-full bg-red-500 text-white px-4 py-2.5 rounded-xl hover:bg-red-600 transition shadow-sm text-center font-bold"
+                className="w-full bg-red-500 text-white px-4 py-2.5 rounded-xl hover:bg-red-600 transition shadow-sm text-center font-bold cursor-pointer"
               >
                 Logout
               </button>

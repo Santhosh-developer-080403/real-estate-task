@@ -2,19 +2,12 @@
 import { useState } from "react";
 import API from "@/services/api";
 import { useRouter } from "next/navigation";
+import PropertyFormFields from "@/components/PropertyFormFields";
+import PropertyImageUpload from "@/components/PropertyImageUpload";
+import Link from "next/link";
 import {
-  Building,
-  IndianRupee,
-  Bed,
-  Bath,
-  MapPin,
-  Upload,
-  Car,
-  Compass,
-  Maximize,
-  CheckCircle2,
+  ArrowLeft,
 } from "lucide-react";
-
 export default function AddPropertyPage() {
   const [formData, setFormData] = useState({
     title: "",
@@ -78,7 +71,6 @@ export default function AddPropertyPage() {
       data.append("property_type", formData.property_type);
       data.append("price", Number(formData.price));
 
-      // Plot-ah iruntha extra fields thevaiilla
       if (formData.property_type !== "Plot") {
         data.append("bedrooms", Number(formData.bedrooms));
         data.append("bathrooms", Number(formData.bathrooms));
@@ -111,21 +103,27 @@ export default function AddPropertyPage() {
     }
   };
 
-  const isPlot = formData.property_type === "Plot";
-
   return (
     <div>
-      <div className="relative add-property-bg text-white py-24 px-6 mb-20 overflow-hidden bg-orange-600">
-        <div className="absolute inset-0 bg-cover bg-center mix-blend-overlay opacity-40 z-0"></div>
 
+      
+      <div className="relative add-property-bg text-white py-24 px-6 mb-10 overflow-hidden bg-orange-600">
+        <div className="absolute inset-0 bg-cover bg-center mix-blend-overlay opacity-40 z-0"></div>
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="max-w-2xl mb-12">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 text-white font-medium mb-3 hover:underline text-sm bg-black/20 px-3 py-1.5 rounded-lg w-fit backdrop-blur-sm transition"
+            >
+              <ArrowLeft size={16} /> Back to Home
+            </Link>
             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-4">
               Add New Property
             </h1>
           </div>
         </div>
       </div>
+
       <div className="max-w-5xl mx-auto px-6 py-10">
         <form
           onSubmit={handleSubmit}
@@ -141,227 +139,15 @@ export default function AddPropertyPage() {
             </p>
           )}
 
-          {/* Title */}
-          <div className="mb-5">
-            <label className="block text-gray-700 text-sm font-semibold mb-2">
-              Property Title
-            </label>
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              placeholder="e.g. Luxury Villa with Swimming Pool"
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm"
-              required
-            />
-          </div>
+          {/* Form Fields Component */}
+          <PropertyFormFields
+            formData={formData}
+            displayPrice={displayPrice}
+            handleChange={handleChange}
+          />
 
-          {/* Description */}
-          <div className="mb-5">
-            <label className="block text-gray-700 text-sm font-semibold mb-2">
-              Description
-            </label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              placeholder="Write details about the property..."
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm"
-              rows="4"
-              required
-            />
-          </div>
-
-          {/* City & Property Type */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-            <div>
-              <label className="block text-gray-700 text-sm font-semibold mb-2 flex items-center gap-1">
-                <MapPin size={16} className="text-orange-500" /> City
-              </label>
-              <input
-                type="text"
-                name="city"
-                value={formData.city}
-                onChange={handleChange}
-                placeholder="e.g. Chennai"
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700 text-sm font-semibold mb-2 flex items-center gap-1">
-                <Building size={16} className="text-orange-500" /> Property Type
-              </label>
-              <select
-                name="property_type"
-                value={formData.property_type}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm custom-dropdown"
-              >
-                <option value="Apartment">Apartment</option>
-                <option value="Villa">Villa</option>
-                <option value="House">House</option>
-                <option value="Plot">Plot</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Price & Area (SqFt) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-            <div>
-              <label className="block text-gray-700 text-sm font-semibold mb-2 flex items-center gap-1">
-                <IndianRupee size={16} className="text-orange-500" /> Price (₹)
-              </label>
-              <input
-                type="text"
-                name="price"
-                value={displayPrice}
-                onChange={handleChange}
-                placeholder="e.g. 55,00,000"
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm"
-                required
-              />
-            </div>
-            {!isPlot && (
-              <div>
-                <label className="block text-gray-700 text-sm font-semibold mb-2 flex items-center gap-1">
-                  <Maximize size={16} className="text-orange-500" /> Area
-                  (Sq.Ft)
-                </label>
-                <input
-                  type="number"
-                  name="area_sqft"
-                  value={formData.area_sqft}
-                  onChange={handleChange}
-                  placeholder="e.g. 2400"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm"
-                  required={!isPlot}
-                />
-              </div>
-            )}
-          </div>
-
-          {/* Conditional Fields for Non-Plot Properties */}
-          {!isPlot && (
-            <>
-              {/* Bedrooms & Bathrooms */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-                <div>
-                  <label className="block text-gray-700 text-sm font-semibold mb-2 flex items-center gap-1">
-                    <Bed size={16} className="text-orange-500" /> Bedrooms (BHK)
-                  </label>
-                  <select
-                    name="bedrooms"
-                    value={formData.bedrooms}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm custom-dropdown"
-                  >
-                    <option value="1">1 BHK</option>
-                    <option value="2">2 BHK</option>
-                    <option value="3">3 BHK</option>
-                    <option value="4">4 BHK</option>
-                    <option value="5">5+ BHK</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-gray-700 text-sm font-semibold mb-2 flex items-center gap-1">
-                    <Bath size={16} className="text-orange-500" /> Bathrooms
-                  </label>
-                  <select
-                    name="bathrooms"
-                    value={formData.bathrooms}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm custom-dropdown"
-                  >
-                    <option value="1">1 Bathroom</option>
-                    <option value="2">2 Bathrooms</option>
-                    <option value="3">3 Bathrooms</option>
-                    <option value="4">4 Bathrooms</option>
-                    <option value="5">5+ Bathrooms</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Parking & Furnishing */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-                <div>
-                  <label className="block text-gray-700 text-sm font-semibold mb-2 flex items-center gap-1">
-                    <Car size={16} className="text-orange-500" /> Parking
-                    Available
-                  </label>
-                  <select
-                    name="parking"
-                    value={formData.parking}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm custom-dropdown"
-                  >
-                    <option value="Car Parking">Car Parking</option>
-                    <option value="Bike Parking">Bike Parking</option>
-                    <option value="Car & Bike Parking">
-                      Car & Bike Parking
-                    </option>
-                    <option value="None">None</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-gray-700 text-sm font-semibold mb-2 flex items-center gap-1">
-                    <CheckCircle2 size={16} className="text-orange-500" />{" "}
-                    Furnishing Status
-                  </label>
-                  <select
-                    name="furnishing"
-                    value={formData.furnishing}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm custom-dropdown"
-                  >
-                    <option value="Semi-Furnished">Semi-Furnished</option>
-                    <option value="Fully Furnished">Fully Furnished</option>
-                    <option value="Unfurnished">Unfurnished</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Facing Direction */}
-              <div className="mb-5">
-                <label className="block text-gray-700 text-sm font-semibold mb-2 flex items-center gap-1">
-                  <Compass size={16} className="text-orange-500" /> Facing
-                  Direction
-                </label>
-                <select
-                  name="facing"
-                  value={formData.facing}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition text-sm custom-dropdown"
-                >
-                  <option value="East">East</option>
-                  <option value="North">North</option>
-                  <option value="West">West</option>
-                  <option value="South">South</option>
-                  <option value="North-East">North-East</option>
-                </select>
-              </div>
-            </>
-          )}
-
-          {/* Image Upload */}
-          <div className="mb-6">
-            <label className="block text-gray-700 text-sm font-semibold mb-2 flex items-center gap-1">
-              <Upload size={16} className="text-orange-500" /> Upload Images
-              from Device
-            </label>
-            <input
-              type="file"
-              name="images"
-              multiple
-              accept="image/*"
-              onChange={handleFileChange}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl text-black bg-gray-50/50 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-600 hover:file:bg-orange-100 transition text-sm cursor-pointer"
-            />
-            <p className="text-xs text-gray-400 mt-1">
-              You can select multiple images at once.
-            </p>
-          </div>
+          {/* Image Upload Component */}
+          <PropertyImageUpload onFileChange={handleFileChange} />
 
           <button
             type="submit"

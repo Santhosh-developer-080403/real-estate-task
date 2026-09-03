@@ -1,12 +1,9 @@
 "use client";
-import { useState } from "react";
-import API from "@/services/api";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Home } from "lucide-react";
 import axios from "axios";
 import { API_URL } from "@/services/api";
-
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -14,37 +11,42 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const router = useRouter();
 
-const handleLogin = async (e) => {
-  e.preventDefault();
-  try {
-    // const res = await axios.post("http://localhost:5000/api/auth/login", {
-    const res = await axios.post(`${API_URL}/api/auth/login`, {
-      email,
-      password,
-    });
+  // Already logged-in users-ah redirect panna
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      router.push("/");
+    }
+  }, [router]);
 
-    localStorage.setItem("token", res.data.token);
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post(`${API_URL}/api/auth/login`, {
+        email,
+        password,
+      });
 
-    // Safe-a check panni name-ah localStorage-la podrom
-    const userName =
-      res.data.user?.name || res.data.name || res.data.username || "User";
-    localStorage.setItem("userName", userName);
+      localStorage.setItem("token", res.data.token);
 
-    window.dispatchEvent(new Event("auth-change"));
-    router.push("/");
-  } catch (err) {
-    console.error("Login error:", err);
-    setError(
-      err.response?.data?.message ||
-        err.response?.data?.error ||
-        "Invalid email or password",
-    );
-  }
-};
+      const userName =
+        res.data.user?.name || res.data.name || res.data.username || "User";
+      localStorage.setItem("userName", userName);
+
+      window.dispatchEvent(new Event("auth-change"));
+      router.push("/");
+    } catch (err) {
+      console.error("Login error:", err);
+      setError(
+        err.response?.data?.message ||
+          err.response?.data?.error ||
+          "Invalid email or password",
+      );
+    }
+  };
 
   return (
     <div className="relative min-h-[85vh] w-full flex items-center justify-center overflow-hidden bg-gray-50 px-4">
-      {/* Background Subtle Gradient or Clean Look */}
       <div className="absolute inset-0 bg-gradient-to-br from-orange-50/50 via-white to-orange-50/30 z-0"></div>
 
       <div className="relative z-10 w-full max-w-md">
