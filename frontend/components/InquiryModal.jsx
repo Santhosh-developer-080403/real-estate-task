@@ -2,7 +2,6 @@
 import { X, MessageSquare, User, Mail, Phone } from "lucide-react";
 
 export default function InquiryModal({ inquiry, onClose, isOpen }) {
-  // isOpen false-ஆக இருந்தாலோ அல்லது inquiry இல்லாட்டாலோ இது ரெண்டரே ஆகாது
   if (!isOpen || !inquiry) return null;
 
   return (

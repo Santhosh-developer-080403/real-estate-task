@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import axios from "axios";
@@ -9,18 +9,13 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
-
-  // Already logged-in users-ah redirect panna
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      router.push("/");
-    }
-  }, [router]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
     try {
       const res = await axios.post(`${API_URL}/api/auth/login`, {
         email,
@@ -42,6 +37,8 @@ export default function LoginPage() {
           err.response?.data?.error ||
           "Invalid email or password",
       );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -74,8 +71,6 @@ export default function LoginPage() {
             </label>
             <input
               type="email"
-              name="no-autofill-email"
-              autoComplete="off"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
@@ -91,8 +86,6 @@ export default function LoginPage() {
             <div className="relative">
               <input
                 type="password"
-                name="no-autofill-password"
-                autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
@@ -104,9 +97,10 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            className="w-full bg-white hover:bg-orange-50 text-orange-600 font-extrabold py-3.5 rounded-xl shadow-lg transition duration-200 uppercase tracking-wide text-sm cursor-pointer"
+            disabled={loading}
+            className="w-full bg-white hover:bg-orange-50 text-orange-600 font-extrabold py-3.5 rounded-xl shadow-lg transition duration-200 uppercase tracking-wide text-sm cursor-pointer disabled:opacity-50"
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
 
           <p className="mt-6 text-center text-sm text-orange-100">

@@ -25,7 +25,6 @@ export default function PropertyFormFields({
         />
       </div>
 
-      {/* Description */}
       <div className="mb-5">
         <label className="block text-gray-700 text-sm font-semibold mb-2">
           Description
@@ -41,7 +40,6 @@ export default function PropertyFormFields({
         />
       </div>
 
-      {/* City & Property Type */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
         <div>
           <label className="block text-gray-700 text-base font-semibold mb-2">
@@ -75,7 +73,6 @@ export default function PropertyFormFields({
         </div>
       </div>
 
-      {/* Price & Area */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
         <div>
           <label className="block text-gray-700 text-base font-semibold mb-2">
@@ -109,7 +106,6 @@ export default function PropertyFormFields({
         )}
       </div>
 
-      {/* Conditional Fields for Non-Plot Properties */}
       {!isPlot && (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">

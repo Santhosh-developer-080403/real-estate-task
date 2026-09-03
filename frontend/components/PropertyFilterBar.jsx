@@ -26,7 +26,6 @@ export default function PropertyFilterBar({
 }) {
   return (
     <div className="bg-white p-2.5 rounded-3xl lg:rounded-full shadow-2xl flex flex-col lg:flex-row items-center gap-1 max-w-6xl text-black border border-orange-100">
-      {/* 1. Location / City Input */}
       <div className="flex items-center px-4 py-3 w-full lg:w-1/5 border-b lg:border-b-0 lg:border-r border-gray-200">
         <MapPin size={18} className="text-orange-500 mr-2.5 shrink-0" />
         <input
@@ -41,7 +40,6 @@ export default function PropertyFilterBar({
         />
       </div>
 
-      {/* 2. Property Type & Bedrooms Dropdown */}
       <div className="flex items-center px-4 py-3 w-full lg:w-1/5 border-b lg:border-b-0 lg:border-r border-gray-200 relative">
         <HomeIcon size={18} className="text-orange-500 mr-2.5 shrink-0" />
         <div className="relative w-full">
@@ -86,7 +84,6 @@ export default function PropertyFilterBar({
         </div>
       </div>
 
-      {/* 3. Budget Range Dropdown */}
       <div className="flex items-center px-4 py-3 w-full lg:w-1/5 border-b lg:border-b-0 lg:border-r border-gray-200 relative">
         <IndianRupee size={16} className="text-orange-500 mr-2.5 shrink-0" />
         <div className="relative w-full">
@@ -136,7 +133,6 @@ export default function PropertyFilterBar({
         </div>
       </div>
 
-      {/* 5. Keyword Search Input & Go Button */}
       <div className="flex items-center px-4 py-2 w-full lg:w-1/5 gap-2">
         <div className="flex items-center w-full">
           <Search size={18} className="text-orange-500 mr-2 shrink-0" />

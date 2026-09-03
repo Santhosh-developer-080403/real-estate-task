@@ -10,8 +10,7 @@ const verifyToken = (req, res, next) => {
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) return res.status(403).json({ message: "Invalid token" });
 
-    // Intha line irukkaa nu parthu kola:
-    req.user = decoded; // or req.user = decoded.user (ungakarathu token structure-ku etha maathiri)
+    req.user = decoded; 
 
     next();
   });

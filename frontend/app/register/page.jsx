@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { API_URL } from "@/services/api";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -14,14 +14,6 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  // Already logged-in users-ah redirect panna
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      router.push("/");
-    }
-  }, [router]);
-
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -33,9 +25,6 @@ export default function RegisterPage() {
         password,
       });
 
-      // Note: Backend register response-la token varala na (ila login endpoint mattum tharum na),
-      // signup pannathum auto-login antha response-ku etha maathiri maathikalam.
-      // Oru vela register-la token varunnu unga controller thanthiruntha, ithu work aagum:
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
       }
@@ -95,8 +84,6 @@ export default function RegisterPage() {
               </span>
               <input
                 type="text"
-                name="reg-name-fake"
-                autoComplete="off"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Enter your name"
@@ -116,8 +103,6 @@ export default function RegisterPage() {
               </span>
               <input
                 type="email"
-                name="reg-email-fake"
-                autoComplete="off"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
@@ -137,8 +122,6 @@ export default function RegisterPage() {
               </span>
               <input
                 type="password"
-                name="reg-password-fake"
-                autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
@@ -170,3 +153,4 @@ export default function RegisterPage() {
     </div>
   );
 }
+  

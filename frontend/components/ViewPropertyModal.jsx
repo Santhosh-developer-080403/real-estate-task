@@ -20,7 +20,6 @@ export default function ViewPropertyModal({
           <X size={20} />
         </button>
 
-        {/* Title & Type */}
         <div className="mb-4 pr-10">
           <span className="bg-orange-100 text-orange-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
             {property.property_type || "Property"}
@@ -34,7 +33,6 @@ export default function ViewPropertyModal({
           </p>
         </div>
 
-        {/* Images Grid */}
         <div className="grid grid-cols-2 gap-2 mb-6">
           {getImagesArray(property.images).map((img, idx) => (
             <img
@@ -46,7 +44,6 @@ export default function ViewPropertyModal({
           ))}
         </div>
 
-        {/* Key Features Grid (Bedrooms, Bathrooms, Sqft, etc.) */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6 bg-gray-50 p-4 rounded-2xl">
           {property.bedrooms !== undefined && property.bedrooms !== null && (
             <div className="flex items-center gap-2 text-gray-700 text-sm font-semibold">
@@ -74,7 +71,6 @@ export default function ViewPropertyModal({
           )}
         </div>
 
-        {/* Price & Description */}
         <div className="space-y-4 text-sm text-gray-700">
           <div>
             <h3 className="font-bold text-gray-900 mb-1">Description</h3>

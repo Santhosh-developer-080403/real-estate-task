@@ -228,11 +228,11 @@ function DashboardContent() {
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
 
-  useEffect(() => {
-    if (tabParam) {
-      setActiveTab(tabParam);
-    }
-  }, [tabParam]);
+  // useEffect(() => {
+  //   if (tabParam) {
+  //     setActiveTab(tabParam);
+  //   }
+  // }, [tabParam]);
 
   return (
 

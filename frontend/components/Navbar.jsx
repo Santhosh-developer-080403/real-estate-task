@@ -28,7 +28,6 @@ export default function Navbar() {
   };
 
   useEffect(() => {
-    checkAuth();
 
     window.addEventListener("storage", checkAuth);
     window.addEventListener("auth-change", checkAuth);
@@ -65,12 +64,12 @@ export default function Navbar() {
   return (
     <nav className="bg-white shadow-sm px-6 py-4 flex justify-between items-center border-b border-gray-100 sticky top-0 z-50">
       <Link href="/" className="...">
-        <Image
-          src="/logos/main-logo.png" // இங்க பாரு da, சிம்பிளா இப்படி கொடுக்கணும்!
+        <img
+          src={headerImg.src}
           alt="Citi Estate Logo"
-          width={100}
-          height={40}
-          priority
+          className="h-10 w-auto object-contain mx-auto"
+          width={500}
+          height={100}
         />
       </Link>
 
@@ -91,7 +90,6 @@ export default function Navbar() {
         )}
 
         {token ? (
-          /* Profile Dropdown (Desktop) - Ref சேர்க்கப்பட்டுள்ளது */
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}

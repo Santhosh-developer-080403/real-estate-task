@@ -18,7 +18,6 @@ export const metadata = {
   creator: "Citi Estate",
   publisher: "Citi Estate",
 
-  // Open Graph (For Facebook, LinkedIn, WhatsApp previews)
   openGraph: {
     type: "website",
     locale: "en_IN",

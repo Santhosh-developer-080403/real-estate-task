@@ -28,7 +28,6 @@ export default function PropertyCard({ property }) {
     }
   }
 
-  // Indian Currency Formatter Helper Function
   const formatIndianCurrency = (amount) => {
     if (!amount) return "0";
     return new Intl.NumberFormat("en-IN", {
@@ -39,7 +38,6 @@ export default function PropertyCard({ property }) {
   return (
     <div className="bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 p-3 flex flex-col justify-between group">
       <div>
-        {/* Image Container with Hover Zoom Animation */}
         <div className="h-52 rounded-2xl bg-gray-100 relative overflow-hidden">
           {imageUrl && !imageUrl.includes("placeholder") ? (
             <img
@@ -53,7 +51,6 @@ export default function PropertyCard({ property }) {
             </div>
           )}
 
-          {/* Top-Left: Property Type Badge */}
           <span className="absolute top-3 left-3 bg-orange-600 text-white text-xs px-3 py-1 rounded-full font-bold shadow-md z-10">
             {property.property_type || "FEATURED"}
           </span>
@@ -65,7 +62,6 @@ export default function PropertyCard({ property }) {
           </div>
         </div>
 
-        {/* Details Section */}
         <div className="p-3">
           <h3 className="text-lg font-bold text-gray-900 truncate">
             {property.title}
@@ -93,7 +89,6 @@ export default function PropertyCard({ property }) {
         </div>
       </div>
 
-      {/* Bottom Action Button */}
       <div className="px-3 pb-2">
         <Link
           href={`/properties/${property.id}`}

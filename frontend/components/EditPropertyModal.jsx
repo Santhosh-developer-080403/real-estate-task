@@ -8,12 +8,11 @@ export default function EditPropertyModal({
   onSubmit,
   onClose,
   isOpen,
-  API_URL, // API_URL-ம் தேவைப்படும்
-  setEditForm, // ஸ்டேட் மாத்த
+  API_URL, 
+  setEditForm,
 }) {
   if (!isOpen) return null;
 
-  // ஏற்கனவே இருக்கிற போட்டோவை நீக்க
   const handleRemoveExistingImage = (indexToRemove) => {
     const updatedImages = editForm.existingImages.filter(
       (_, index) => index !== indexToRemove,
@@ -21,7 +20,6 @@ export default function EditPropertyModal({
     setEditForm({ ...editForm, existingImages: updatedImages });
   };
 
-  // புது போட்டோவை ஆட் பண்ண
   const handleNewImagesChange = (e) => {
     const files = Array.from(e.target.files);
     setEditForm({ ...editForm, newImages: files });

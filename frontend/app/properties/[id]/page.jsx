@@ -69,7 +69,7 @@ export default function PropertyDetailsPage() {
               (item) =>
                 item.city?.toLowerCase() === currentCity.toLowerCase() &&
                 item.property_type?.toLowerCase() ===
-                  currentType?.toLowerCase() &&
+                currentType?.toLowerCase() &&
                 item.id !== Number(id),
             );
             setRelatedProperties(filtered);
@@ -82,9 +82,9 @@ export default function PropertyDetailsPage() {
     }
   }, [id]);
 
-  useEffect(() => {
-    setActiveImage(0);
-  }, [id]);
+  // useEffect(() => {
+  //   setActiveImage(0);
+  // }, [id]);
 
   const handleInquiryChange = (e) => {
     setInquiryForm({ ...inquiryForm, [e.target.name]: e.target.value });
@@ -164,7 +164,7 @@ export default function PropertyDetailsPage() {
         img.startsWith("http")
           ? img
           : // : `http://localhost:5000${img.startsWith("/") ? "" : "/"}${img}`,
-            `${API_URL}${img.startsWith("/") ? "" : "/"}${img}`,
+          `${API_URL}${img.startsWith("/") ? "" : "/"}${img}`,
       );
     }
   }
@@ -173,7 +173,7 @@ export default function PropertyDetailsPage() {
 
   const bannerImage = images.length > 0 ? images[activeImage] : "";
 
-const agentDisplayName = property.owner_name || "Property Owner";
+  const agentDisplayName = property.owner_name || "Property Owner";
 
   return (
     <div className="min-h-screen bg-gray-50/50 text-gray-800 pb-16">
@@ -255,11 +255,10 @@ const agentDisplayName = property.owner_name || "Property Owner";
                     <div
                       key={idx}
                       onClick={() => setActiveImage(idx)}
-                      className={`h-20 w-28 flex-shrink-0 rounded-xl overflow-hidden cursor-pointer border-2 transition ${
-                        activeImage === idx
+                      className={`h-20 w-28 flex-shrink-0 rounded-xl overflow-hidden cursor-pointer border-2 transition ${activeImage === idx
                           ? "border-orange-500 shadow-md ring-2 ring-orange-500/20"
                           : "border-transparent opacity-70 hover:opacity-100"
-                      }`}
+                        }`}
                     >
                       <img
                         src={img}
@@ -413,9 +412,9 @@ const agentDisplayName = property.owner_name || "Property Owner";
                           itemImg = parsed[0].startsWith("http")
                             ? parsed[0]
                             : // : `http://localhost:5000${parsed[0].startsWith("/") ? "" : "/"}${parsed[0]}`;
-                              `${API_URL}${parsed[0].startsWith("/") ? "" : "/"}${parsed[0]}`;
+                            `${API_URL}${parsed[0].startsWith("/") ? "" : "/"}${parsed[0]}`;
                         }
-                      } catch (e) {}
+                      } catch (e) { }
                     }
                     return (
                       <Link
