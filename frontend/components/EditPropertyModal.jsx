@@ -1,6 +1,6 @@
 "use client";
 import { X, Edit3, Trash2, Upload } from "lucide-react";
-
+import API from "@/services/api";
 export default function EditPropertyModal({
   editForm,
   updating,
@@ -8,7 +8,7 @@ export default function EditPropertyModal({
   onSubmit,
   onClose,
   isOpen,
-  API_URL, 
+  API_URL,
   setEditForm,
 }) {
   if (!isOpen) return null;
@@ -106,34 +106,50 @@ export default function EditPropertyModal({
             <label className="block text-gray-700 font-semibold mb-2">
               Current Images
             </label>
-            <div className="grid grid-cols-3 gap-2">
-              {editForm.existingImages && editForm.existingImages.length > 0 ? (
-                editForm.existingImages.map((img, idx) => (
-                  <div
-                    key={idx}
-                    className="relative group rounded-xl overflow-hidden border h-24"
-                  >
-                    <img
-                      src={`${API_URL || "http://localhost:5000"}${img}`}
-                      alt="Property"
-                      className="w-full h-full object-cover"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveExistingImage(idx)}
-                      className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full opacity-80 hover:opacity-100 transition cursor-pointer"
-                      title="Remove image"
+
+            {Array.isArray(editForm.existingImages) &&
+              editForm.existingImages.length > 0 ? (
+              <div className="grid grid-cols-3 gap-2">
+                {editForm.existingImages.map((img, idx) => {
+                  const imageUrl = getImageUrl(img);
+
+                  return (
+                    <div
+                      key={`${img}-${idx}`}
+                      className="relative group rounded-xl overflow-hidden border border-gray-300 h-24 bg-gray-100"
                     >
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-400 text-xs col-span-3">
-                  No images uploaded yet.
-                </p>
-              )}
-            </div>
+                      {/* IMAGE */}
+                      <img
+                        src={imageUrl}
+                        alt={`Property ${idx + 1}`}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          console.error("❌ Image failed:", imageUrl);
+
+                          e.currentTarget.onerror = null;
+
+                          e.currentTarget.src = "/placeholder.jpg";
+                        }}
+                      />
+
+                      {/* DELETE BUTTON */}
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveExistingImage(idx)}
+                        className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full opacity-90 hover:opacity-100 transition cursor-pointer shadow-md"
+                        title="Remove image"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="border border-dashed border-gray-300 rounded-xl p-5 text-center">
+                <p className="text-gray-400 text-xs">No images uploaded yet.</p>
+              </div>
+            )}
           </div>
 
           {/* Upload New Images */}
@@ -184,3 +200,16 @@ export default function EditPropertyModal({
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
