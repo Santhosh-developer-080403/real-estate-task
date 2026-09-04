@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { API_URL } from "@/services/api";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -14,10 +14,52 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      router.push("/");
+    }
+  }, [router]);
+
+  // const handleRegister = async (e) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+  //   setError("");
+  //   try {
+  //     const res = await axios.post(`${API_URL}/api/auth/register`, {
+  //       name,
+  //       email,
+  //       password,
+  //     });
+
+
+  //     if (res.data.token) {
+  //       localStorage.setItem("token", res.data.token);
+  //     }
+
+  //     const userName =
+  //       res.data.user?.name || res.data.name || res.data.username || name;
+  //     localStorage.setItem("userName", userName);
+
+  //     window.dispatchEvent(new Event("auth-change"));
+  //     router.push("/");
+  //   } catch (err) {
+  //     console.error("Register error:", err);
+  //     setError(
+  //       err.response?.data?.message ||
+  //         err.response?.data?.error ||
+  //         "Registration failed. Please try again.",
+  //     );
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+
     try {
       const res = await axios.post(`${API_URL}/api/auth/register`, {
         name,
@@ -25,18 +67,12 @@ export default function RegisterPage() {
         password,
       });
 
-      if (res.data.token) {
-        localStorage.setItem("token", res.data.token);
-      }
+      alert(res.data.message || "Registration successful!");
 
-      const userName =
-        res.data.user?.name || res.data.name || res.data.username || name;
-      localStorage.setItem("userName", userName);
-
-      window.dispatchEvent(new Event("auth-change"));
-      router.push("/");
+      router.push("/login");
     } catch (err) {
       console.error("Register error:", err);
+
       setError(
         err.response?.data?.message ||
           err.response?.data?.error ||
@@ -46,9 +82,8 @@ export default function RegisterPage() {
       setLoading(false);
     }
   };
-
   return (
-    <div className="relative min-h-[85vh] w-full flex items-center justify-center overflow-hidden bg-gray-50 px-4 py-8 !bg-[#ff9701]">
+    <div className="relative min-h-[85vh] w-full flex items-center justify-center overflow-hidden bg-gray-50 px-4 py-8">
       <div className="absolute inset-0 bg-gradient-to-br from-orange-50/50 via-white to-orange-50/30 z-0"></div>
 
       <div className="relative z-10 w-full max-w-md">
@@ -84,6 +119,8 @@ export default function RegisterPage() {
               </span>
               <input
                 type="text"
+                name="reg-name-fake"
+                autoComplete="off"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Enter your name"
@@ -103,6 +140,8 @@ export default function RegisterPage() {
               </span>
               <input
                 type="email"
+                name="reg-email-fake"
+                autoComplete="off"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
@@ -122,6 +161,8 @@ export default function RegisterPage() {
               </span>
               <input
                 type="password"
+                name="reg-password-fake"
+                autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
@@ -153,4 +194,5 @@ export default function RegisterPage() {
     </div>
   );
 }
+
   
