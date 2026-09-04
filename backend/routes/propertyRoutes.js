@@ -122,7 +122,8 @@ router.get("/:id", getPropertyById);
  *       401:
  *         description: Unauthorized
  */
-router.post("/", authMiddleware, upload.array("images", 5), createProperty);
+// router.post("/", authMiddleware, upload.array("images", 5), createProperty);
+router.post("/", authMiddleware, upload, createProperty);
 
 /**
  * @swagger
@@ -160,7 +161,8 @@ router.post("/", authMiddleware, upload.array("images", 5), createProperty);
  *       404:
  *         description: Property not found
  */
-router.put("/:id", authMiddleware, upload.array("images", 5), updateProperty);
+// router.put("/:id", authMiddleware, upload.array("images", 5), updateProperty);
+router.put("/:id", authMiddleware, upload, updateProperty);
 
 /**
  * @swagger

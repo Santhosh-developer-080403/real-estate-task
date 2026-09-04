@@ -22,8 +22,11 @@ export default function PropertyCard({ property }) {
         imgs = [imgs];
       }
     }
-    if (Array.isArray(imgs) && imgs.length > 0 && imgs[0]) {
-      const imgPath = imgs[0];
+    const imgPath = imgs[0];
+
+    if (imgPath.startsWith("http://") || imgPath.startsWith("https://")) {
+      imageUrl = imgPath;
+    } else {
       imageUrl = `${API_URL}${imgPath.startsWith("/") ? "" : "/"}${imgPath}`;
     }
   }

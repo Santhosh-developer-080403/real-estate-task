@@ -84,19 +84,15 @@ export default function AddPropertyPage() {
         data.append("images", images[i]);
       }
 
-      await API.post("/api/properties", data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      await API.post("/api/properties", data);
 
       router.push("/");
     } catch (err) {
       console.error("Property creation error:", err.response || err);
       setError(
         err.response?.data?.message ||
-          err.response?.data?.error ||
-          "Failed to create property. Please check all fields.",
+        err.response?.data?.error ||
+        "Failed to create property. Please check all fields.",
       );
     } finally {
       setLoading(false);
@@ -106,7 +102,7 @@ export default function AddPropertyPage() {
   return (
     <div>
 
-      
+
       <div className="relative add-property-bg text-white py-24 px-6 mb-10 overflow-hidden bg-orange-600">
         <div className="absolute inset-0 bg-cover bg-center mix-blend-overlay opacity-40 z-0"></div>
         <div className="max-w-7xl mx-auto relative z-10">

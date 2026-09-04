@@ -8,7 +8,7 @@ export default function EditPropertyModal({
   onSubmit,
   onClose,
   isOpen,
-  API_URL, 
+  API_URL,
   setEditForm,
 }) {
   if (!isOpen) return null;
@@ -106,6 +106,7 @@ export default function EditPropertyModal({
             <label className="block text-gray-700 font-semibold mb-2">
               Current Images
             </label>
+
             <div className="grid grid-cols-3 gap-2">
               {editForm.existingImages && editForm.existingImages.length > 0 ? (
                 editForm.existingImages.map((img, idx) => (
@@ -114,10 +115,15 @@ export default function EditPropertyModal({
                     className="relative group rounded-xl overflow-hidden border h-24"
                   >
                     <img
-                      src={`${API_URL}${img}`}
+                      src={
+                        img.startsWith("http://") || img.startsWith("https://")
+                          ? img
+                          : `${API_URL}${img.startsWith("/") ? "" : "/"}${img}`
+                      }
                       alt="Property"
                       className="w-full h-full object-cover"
                     />
+
                     <button
                       type="button"
                       onClick={() => handleRemoveExistingImage(idx)}
@@ -184,4 +190,3 @@ export default function EditPropertyModal({
     </div>
   );
 }
-

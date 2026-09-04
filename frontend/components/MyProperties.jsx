@@ -44,9 +44,14 @@ export default function MyProperties({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {properties.map((property) => {
-        const imgs = getImagesArray(property.images);
-        const firstImg =
-          imgs.length > 0 ? `${API_URL}${imgs[0]}` : "/placeholder.jpg";
+const imgs = getImagesArray(property.images);
+
+const firstImg =
+  imgs.length > 0
+    ? imgs[0].startsWith("http://") || imgs[0].startsWith("https://")
+      ? imgs[0]
+      : `${API_URL}${imgs[0].startsWith("/") ? "" : "/"}${imgs[0]}`
+    : "/placeholder.jpg";
 
         return (
           <div

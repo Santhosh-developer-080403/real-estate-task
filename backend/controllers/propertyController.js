@@ -155,11 +155,19 @@ const createProperty = async (req, res) => {
       area_sqft,
     } = req.body;
 
+    // const imagePaths =
+    //   req.files && Array.isArray(req.files)
+    //     ? req.files.map((file) => `/uploads/${file.filename}`)
+    //     : [];
+    // const imagesString = JSON.stringify(imagePaths);
+
     const imagePaths =
       req.files && Array.isArray(req.files)
-        ? req.files.map((file) => `/uploads/${file.filename}`)
+        ? req.files.map((file) => file.path)
         : [];
+
     const imagesString = JSON.stringify(imagePaths);
+
 
     const query = `
       INSERT INTO properties 
