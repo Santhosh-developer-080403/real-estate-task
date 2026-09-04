@@ -114,7 +114,7 @@ export default function EditPropertyModal({
                     className="relative group rounded-xl overflow-hidden border h-24"
                   >
                     <img
-                      src={`${API_URL || "http://localhost:5000"}${img}`}
+                      src={`${API_URL}${img}`}
                       alt="Property"
                       className="w-full h-full object-cover"
                     />
