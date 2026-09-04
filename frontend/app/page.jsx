@@ -58,7 +58,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-16">
-      {/* Hero Banner with Background Image & Orange Gradient Overlay */}
+      {/* Hero Banner  */}
       <div className="relative banner-bg text-white py-24 px-6 mb-20 overflow-hidden">
         <div className="absolute inset-0 bg-cover bg-center mix-blend-overlay opacity-40 z-0"></div>
 

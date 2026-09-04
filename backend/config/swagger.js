@@ -28,7 +28,7 @@ const options = {
       },
     },
   },
-  apis: ["./src/routes/*.js"], // Routes-la irukra JSDoc comments-a padichu doc create pannum
+  apis: ["./routes/*.js"],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
