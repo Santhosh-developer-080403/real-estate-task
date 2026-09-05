@@ -3,13 +3,14 @@ import { useState, useEffect } from "react";
 import { API_URL } from "@/services/api";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { User, Mail, Lock } from "lucide-react";
+import { User, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import axios from "axios";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -102,13 +103,11 @@ export default function RegisterPage() {
             </span>{" "}
             today
           </p>
-
           {error && (
             <p className="bg-red-500/20 text-white border border-red-200/40 p-3 rounded-xl mb-5 text-sm text-center backdrop-blur-sm font-medium">
               {error}
             </p>
           )}
-
           <div className="mb-5">
             <label className="block text-orange-100 text-sm font-semibold mb-2">
               Full Name
@@ -129,7 +128,6 @@ export default function RegisterPage() {
               />
             </div>
           </div>
-
           <div className="mb-5">
             <label className="block text-orange-100 text-sm font-semibold mb-2">
               Email Address
@@ -150,28 +148,37 @@ export default function RegisterPage() {
               />
             </div>
           </div>
-
           <div className="mb-6">
             <label className="block text-orange-100 text-sm font-semibold mb-2">
               Password
             </label>
+
             <div className="relative">
               <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-orange-400 pointer-events-none">
                 <Lock size={18} />
               </span>
+
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 name="reg-password-fake"
                 autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full px-4 py-3 pl-11 border border-orange-400/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-white text-orange-500 placeholder-orange-500 bg-white transition text-sm"
+                className="w-full px-4 py-3 pl-11 pr-12 border border-orange-400/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-white text-orange-500 placeholder-orange-500 bg-white transition text-sm"
                 required
               />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-orange-400 hover:text-orange-600 transition cursor-pointer"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff size={19} /> : <Eye size={19} />}
+              </button>
             </div>
           </div>
-
           <button
             type="submit"
             disabled={loading}
@@ -179,7 +186,6 @@ export default function RegisterPage() {
           >
             {loading ? "Creating Account..." : "Register"}
           </button>
-
           <p className="mt-6 text-center text-sm text-orange-100">
             Already have an account?{" "}
             <Link

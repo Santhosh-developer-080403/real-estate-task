@@ -8,6 +8,7 @@ const poppins = Poppins({
   weight: ["400", "500", "600", "700"],
 });
 
+
 export const metadata = {
   title: "Citi Estate - Find Your Dream Property in Chennai",
   description:

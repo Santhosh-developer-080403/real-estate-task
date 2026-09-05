@@ -4,10 +4,13 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import axios from "axios";
 import { API_URL } from "@/services/api";
+import { User, Mail, Lock, Eye, EyeOff } from "lucide-react";
+
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -45,7 +48,6 @@ export default function LoginPage() {
   return (
     <div className="relative min-h-[85vh] w-full flex items-center justify-center overflow-hidden bg-gray-50 px-4 !bg-[#ff9701]">
       <div className="absolute inset-0 bg-gradient-to-br from-orange-50/50 via-white to-orange-50/30 z-0"></div>
-
       <div className="relative z-10 w-full max-w-md">
         <form
           onSubmit={handleLogin}
@@ -58,13 +60,11 @@ export default function LoginPage() {
               Citi Estate
             </span>
           </h2>
-
           {error && (
             <p className="bg-red-500/20 text-white border border-red-200/40 p-3 rounded-xl mb-5 text-sm text-center backdrop-blur-sm font-medium">
               {error}
             </p>
           )}
-
           <div className="mb-5">
             <label className="block text-orange-100 text-sm font-semibold mb-2">
               Email
@@ -78,23 +78,31 @@ export default function LoginPage() {
               required
             />
           </div>
-
           <div className="mb-6">
             <label className="block text-orange-100 text-sm font-semibold mb-2">
               Password
             </label>
+
             <div className="relative">
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full px-4 py-3 pr-10 border border-orange-400/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-white text-orange-500 placeholder-orange-500 bg-white transition text-sm"
+                className="w-full px-4 py-3 pr-12 border border-orange-400/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-white text-orange-500 placeholder-orange-500 bg-white transition text-sm"
                 required
               />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute inset-y-0 right-0 flex items-center pr-3 text-orange-400 hover:text-orange-600 transition cursor-pointer"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff size={19} /> : <Eye size={19} />}
+              </button>
             </div>
           </div>
-
           <button
             type="submit"
             disabled={loading}
@@ -102,7 +110,6 @@ export default function LoginPage() {
           >
             {loading ? "Logging in..." : "Login"}
           </button>
-
           <p className="mt-6 text-center text-sm text-orange-100">
             Do not have an account?{" "}
             <Link

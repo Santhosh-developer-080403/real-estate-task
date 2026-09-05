@@ -153,6 +153,7 @@ export default function PropertyFilterBar({
         >
           GO
         </button>
+        
       </div>
     </div>
   );
