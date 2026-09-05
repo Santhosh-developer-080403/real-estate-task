@@ -34,14 +34,53 @@ export default function ViewPropertyModal({
         </div>
 
         <div className="grid grid-cols-2 gap-2 mb-6">
-          {getImagesArray(property.images).map((img, idx) => (
-            <img
-              key={idx}
-              src={`${API_URL}${img}`}
-              alt="Property"
-              className="w-full h-44 object-cover rounded-2xl border"
-            />
-          ))}
+          {(() => {
+            let images = [];
+
+            if (typeof getImagesArray === "function") {
+              images = getImagesArray(property.images);
+            }
+
+            if (!Array.isArray(images)) {
+              images = [];
+            }
+
+            images = images.filter(
+              (img) => typeof img === "string" && img.trim().length > 0,
+            );
+
+            if (images.length === 0) {
+              return (
+                <div className="col-span-2 h-44 rounded-2xl bg-gray-100 flex items-center justify-center text-gray-400">
+                  No Image Available
+                </div>
+              );
+            }
+
+            return images.map((img, idx) => {
+              const imagePath = img.trim();
+
+              const imageUrl =
+                imagePath.startsWith("http://") ||
+                imagePath.startsWith("https://")
+                  ? imagePath
+                  : `${API_URL}${
+                      imagePath.startsWith("/") ? "" : "/"
+                    }${imagePath}`;
+
+              return (
+                <img
+                  key={idx}
+                  src={imageUrl}
+                  alt="Property"
+                  className="w-full h-44 object-cover rounded-2xl border"
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                  }}
+                />
+              );
+            });
+          })()}
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6 bg-gray-50 p-4 rounded-2xl">
